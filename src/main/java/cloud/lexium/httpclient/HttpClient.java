@@ -9,10 +9,10 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpClient {
 
-    private static final SocketClient client = new SocketClient();
-
     public HttpResponse sendRequest(HttpRequest request) throws Exception {
-        client.connect(InetAddress.getByName(request.getHost()), (request.getPort() == 0 ? 80 : request.getPort()));
+        SocketClient client = new SocketClient(request.isHttps());
+
+        client.connect(InetAddress.getByName(request.getHost()), request.getPort());
 
         CompletableFuture<HttpResponse> future = CompletableFuture.supplyAsync(() -> {
             try {

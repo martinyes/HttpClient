@@ -1,8 +1,12 @@
 package cloud.lexium.httpclient.net;
 
 import cloud.lexium.httpclient.HttpRequest;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,12 +16,24 @@ import java.net.Socket;
 @Getter
 public class SocketClient {
 
+    public boolean useHttps;
+
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
 
+    public SocketClient(boolean useHttps) {
+        this.useHttps = useHttps;
+    }
+
     public void connect(InetAddress host, int port) throws IOException {
-        this.socket = new Socket(host, port);
+        if (useHttps) {
+            SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            this.socket = sslsocketfactory.createSocket(host, port);
+        } else {
+            this.socket = new Socket(host, port);
+        }
+
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(socket.getInputStream());
     }

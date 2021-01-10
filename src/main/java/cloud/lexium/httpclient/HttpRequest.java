@@ -13,7 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public class HttpRequest {
 
     private final String host;
-    private final int port;
+    @Builder.Default private final int port = 80;
+    private final boolean https;
     private final HttpMethod method;
     private final String path;
     private final Duration timeout;
@@ -26,5 +27,12 @@ public class HttpRequest {
         }
 
         return null;
+    }
+
+    public static class HttpRequestBuilder {
+        public HttpRequestBuilder https() {
+            this.https = true;
+            return this;
+        }
     }
 }
