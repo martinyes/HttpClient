@@ -1,7 +1,7 @@
-package cloud.lexium.caesar;
+package cloud.lexium.httpclient;
 
-import cloud.lexium.caesar.data.HttpMethod;
-import cloud.lexium.caesar.data.response.HttpResponse;
+import cloud.lexium.httpclient.data.HttpMethod;
+import cloud.lexium.httpclient.data.response.HttpResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ public class HttpRequest {
 
     public CompletableFuture<HttpResponse> execute() {
         try {
-            return new HttpClient().sendRequest(this);
+            return CompletableFuture.completedFuture(new HttpClient().sendRequest(this));
         } catch (Exception e) {
             e.printStackTrace();
         }

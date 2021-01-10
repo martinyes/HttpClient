@@ -1,4 +1,4 @@
-package cloud.lexium.caesar.data.response;
+package cloud.lexium.httpclient.data.response;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;

@@ -1,26 +1,24 @@
 package test;
 
-import cloud.lexium.caesar.HttpRequest;
-import cloud.lexium.caesar.data.HttpMethod;
+import cloud.lexium.httpclient.HttpRequest;
+import cloud.lexium.httpclient.data.HttpMethod;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 
-public class CaesarTest {
+public class HttpClientTest {
 
-    public static void main(String[] args) throws IOException {
-        // Caesar
+    public static void main(String[] args) {
+        // Custom
         HttpRequest.builder()
                 .host("localhost")
                 .port(8080)
                 .method(HttpMethod.GET)
+                .path("/get")
                 .timeout(Duration.ofSeconds(10))
                 .build()
                 .execute()
                 .whenComplete((res, ex) -> {
-                    System.out.println("Caesar: " + res.getBody());
+                    System.out.println("Custom: " + res.getStatusCode());
                 });
 
         // HttpClient

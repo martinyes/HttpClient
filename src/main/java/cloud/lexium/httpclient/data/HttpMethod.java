@@ -1,4 +1,4 @@
-package cloud.lexium.caesar.data;
+package cloud.lexium.httpclient.data;
 
 public enum HttpMethod {
 

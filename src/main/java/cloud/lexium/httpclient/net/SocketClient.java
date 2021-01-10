@@ -1,5 +1,6 @@
-package cloud.lexium.caesar.net;
+package cloud.lexium.httpclient.net;
 
+import cloud.lexium.httpclient.HttpRequest;
 import lombok.Getter;
 
 import java.io.DataInputStream;
@@ -19,18 +20,21 @@ public class SocketClient {
         this.socket = new Socket(host, port);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(socket.getInputStream());
-
-        out.write("GET /get HTTP/1.1\r\nConnection: close\r\nHost:localhost\r\n\r\n"
-                .getBytes());
-        String response = readAsString(in);
-
-        System.out.println(response);
     }
 
     public void close() throws IOException {
         this.out.close();
         this.in.close();
         this.socket.close();
+    }
+
+    public String send(HttpRequest request) throws IOException {
+        String rawHeader = "%s HTTP/1.1\r\nConnection: close\r\nHost:%s\r\n\r\n";
+
+        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath(), request.getHost() + ":" + request.getPort())
+                .getBytes());
+
+        return readAsString(in);
     }
 
     private String readAsString(DataInputStream inputStream) throws IOException {
