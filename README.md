@@ -7,6 +7,7 @@ A lightweight and easy to use HTTP Client.
 - ~~HTTP/2~~
 
 ## Features
+* [x] Well-documented
 * [ ] Support for using a wrapper based on Http(s)URLConnection
 * [x] Both Sync (blocking) and Async (non-blocking) API
   - Using Future for the async API
