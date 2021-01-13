@@ -2,23 +2,22 @@ package test;
 
 import cloud.lexium.httpclient.HttpRequest;
 import cloud.lexium.httpclient.data.HttpMethod;
-
-import java.time.Duration;
+import cloud.lexium.httpclient.data.HttpVersion;
 
 public class HttpClientTest {
 
     public static void main(String[] args) {
         // Custom
         HttpRequest.builder()
-                .host("localhost")
-                .port(8080)
+                .host("mineside.hu")
+                .https()
                 .method(HttpMethod.GET)
                 .path("/get")
-                .timeout(Duration.ofSeconds(10))
+                .version(HttpVersion.HTTP_1_1)
                 .build()
                 .execute()
                 .whenComplete((res, ex) -> {
-                    System.out.println("Custom: " + res.getStatusCode());
+                    System.out.println("Custom: " + res.statusCode());
                 });
 
         // HttpClient

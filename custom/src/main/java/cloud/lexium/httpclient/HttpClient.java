@@ -1,6 +1,7 @@
 package cloud.lexium.httpclient;
 
 import cloud.lexium.httpclient.data.response.HttpResponse;
+import cloud.lexium.httpclient.data.response.impl.HttpResponseImpl;
 import cloud.lexium.httpclient.net.SocketClient;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class HttpClient {
 
         CompletableFuture<HttpResponse> future = CompletableFuture.supplyAsync(() -> {
             try {
-                return toResponse(client.send(request));
+                return parseResponse(client.send(request), request);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -35,10 +36,28 @@ public class HttpClient {
         return future.get();
     }
 
-    private HttpResponse toResponse(String responseData) throws IOException {
-        HttpResponse response = new HttpResponse();
-        response.setStatusCode(200);
+    private HttpResponse parseResponse(String data, HttpRequest request) throws IOException {
+        /*
+         * HTTP Response structure
+         *
+         * 1) status message
+         * 2) an optional set of http headers
+         * 3) a blank line indicating all meta-information
+         * 4) an optional body content
+         */
 
-        return response;
+        String[] messages = data.split("\r\n");
+        StringBuilder headerBuilder = new StringBuilder();
+        StringBuilder bodyBuilder = new StringBuilder();
+
+        System.out.println(data);
+
+        for (String message : messages) {
+            boolean blankLine = !message.matches("-*\\w.*"); // Checks for at least one ASCII char
+
+
+        }
+
+        return new HttpResponseImpl(request, -1, null, null);
     }
 }

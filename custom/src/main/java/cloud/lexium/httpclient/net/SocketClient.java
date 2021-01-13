@@ -1,11 +1,8 @@
 package cloud.lexium.httpclient.net;
 
 import cloud.lexium.httpclient.HttpRequest;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +15,7 @@ public class SocketClient {
 
     public boolean useHttps;
 
-    private Socket socket;
+    private Socket serverSocket;
     private DataOutputStream out;
     private DataInputStream in;
 
@@ -27,27 +24,33 @@ public class SocketClient {
     }
 
     public void connect(InetAddress host, int port) throws IOException {
+        int portToUse = port == -1 ? getDefaultPort() : port;
         if (useHttps) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            this.socket = sslsocketfactory.createSocket(host, port);
+            this.serverSocket = sslsocketfactory.createSocket(host, portToUse);
         } else {
-            this.socket = new Socket(host, port);
+            this.serverSocket = new Socket(host, portToUse);
         }
 
-        this.out = new DataOutputStream(socket.getOutputStream());
-        this.in = new DataInputStream(socket.getInputStream());
+        this.out = new DataOutputStream(serverSocket.getOutputStream());
+        this.in = new DataInputStream(serverSocket.getInputStream());
     }
 
     public void close() throws IOException {
         this.out.close();
         this.in.close();
-        this.socket.close();
+        this.serverSocket.close();
+    }
+
+    public int getDefaultPort() {
+        return useHttps ? 443 : 80;
     }
 
     public String send(HttpRequest request) throws IOException {
-        String rawHeader = "%s HTTP/1.1\r\nConnection: close\r\nHost:%s\r\n\r\n";
+        String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
 
-        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath(), request.getHost() + ":" + request.getPort())
+        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath(),
+                request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
                 .getBytes());
 
         return readAsString(in);

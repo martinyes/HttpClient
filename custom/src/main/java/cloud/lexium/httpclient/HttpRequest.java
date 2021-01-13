@@ -1,11 +1,13 @@
 package cloud.lexium.httpclient;
 
+import cloud.lexium.httpclient.config.IConfig;
+import cloud.lexium.httpclient.config.impl.DefaultConfiguration;
 import cloud.lexium.httpclient.data.HttpMethod;
+import cloud.lexium.httpclient.data.HttpVersion;
 import cloud.lexium.httpclient.data.response.HttpResponse;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 @Builder
@@ -13,11 +15,12 @@ import java.util.concurrent.CompletableFuture;
 public class HttpRequest {
 
     private final String host;
-    @Builder.Default private final int port = 80;
+    @Builder.Default private final int port = -1;
+    @Builder.Default private final IConfig config = new DefaultConfiguration();
+    @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
     private final boolean https;
     private final HttpMethod method;
-    private final String path;
-    private final Duration timeout;
+    @Builder.Default private final String path = "/";
 
     public CompletableFuture<HttpResponse> execute() {
         try {
