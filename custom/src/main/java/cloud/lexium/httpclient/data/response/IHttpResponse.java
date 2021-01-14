@@ -1,8 +1,6 @@
 package cloud.lexium.httpclient.data.response;
 
-import cloud.lexium.httpclient.HttpRequest;
-import lombok.Getter;
-import lombok.Setter;
+import cloud.lexium.httpclient.data.request.HttpRequest;
 
 import java.util.Map;
 
@@ -17,7 +15,7 @@ public class HttpResponse {
     private String header;
     private String body;
 }*/
-public interface HttpResponse {
+public interface IHttpResponse {
 
     HttpRequest request();
 

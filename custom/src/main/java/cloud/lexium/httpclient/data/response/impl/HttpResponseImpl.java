@@ -1,13 +1,13 @@
 package cloud.lexium.httpclient.data.response.impl;
 
-import cloud.lexium.httpclient.HttpRequest;
-import cloud.lexium.httpclient.data.response.HttpResponse;
+import cloud.lexium.httpclient.data.request.HttpRequest;
+import cloud.lexium.httpclient.data.response.IHttpResponse;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
 @AllArgsConstructor
-public class HttpResponseImpl implements HttpResponse {
+public class HttpResponseImpl implements IHttpResponse {
 
     private HttpRequest request;
     private int statusCode;

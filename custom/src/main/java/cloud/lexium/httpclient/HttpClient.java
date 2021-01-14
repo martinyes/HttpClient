@@ -1,8 +1,9 @@
 package cloud.lexium.httpclient;
 
-import cloud.lexium.httpclient.data.response.HttpResponse;
+import cloud.lexium.httpclient.data.request.HttpRequest;
+import cloud.lexium.httpclient.data.response.IHttpResponse;
 import cloud.lexium.httpclient.data.response.impl.HttpResponseImpl;
-import cloud.lexium.httpclient.net.SocketClient;
+import cloud.lexium.httpclient.socket.SocketClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -10,12 +11,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpClient {
 
-    public HttpResponse sendRequest(HttpRequest request) throws Exception {
+    public IHttpResponse sendRequest(HttpRequest request) throws Exception {
         SocketClient client = new SocketClient(request.isHttps());
 
         client.connect(InetAddress.getByName(request.getHost()), request.getPort());
 
-        CompletableFuture<HttpResponse> future = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<IHttpResponse> future = CompletableFuture.supplyAsync(() -> {
             try {
                 return parseResponse(client.send(request), request);
             } catch (IOException e) {
@@ -36,7 +37,7 @@ public class HttpClient {
         return future.get();
     }
 
-    private HttpResponse parseResponse(String data, HttpRequest request) throws IOException {
+    private IHttpResponse parseResponse(String data, HttpRequest request) throws IOException {
         /*
          * HTTP Response structure
          *

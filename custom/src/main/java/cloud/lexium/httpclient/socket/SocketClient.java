@@ -1,6 +1,6 @@
-package cloud.lexium.httpclient.net;
+package cloud.lexium.httpclient.socket;
 
-import cloud.lexium.httpclient.HttpRequest;
+import cloud.lexium.httpclient.data.request.HttpRequest;
 import lombok.Getter;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 @Getter
 public class SocketClient {
