@@ -1,6 +1,7 @@
 package cloud.lexium.httpclient.socket;
 
 import cloud.lexium.httpclient.data.request.HttpRequest;
+import cloud.lexium.httpclient.data.request.ParamProcessor;
 import lombok.Getter;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -9,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 @Getter
 public class SocketClient {
@@ -49,8 +49,11 @@ public class SocketClient {
 
     public String send(HttpRequest request) throws IOException {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
+        String queryParam = ParamProcessor.buildQueryURL(request);
 
-        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath(),
+        System.out.println(queryParam);
+
+        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
                 request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
                 .getBytes());
 

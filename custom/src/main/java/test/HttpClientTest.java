@@ -13,7 +13,6 @@ public class HttpClientTest {
                 .https()
                 .method(HttpMethod.GET)
                 .path("/get")
-                .params("key1", "value1", "key1", "value2")
                 .version(HttpVersion.HTTP_1_1)
                 .build()
                 .execute()

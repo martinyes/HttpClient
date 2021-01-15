@@ -6,11 +6,11 @@ import cloud.lexium.httpclient.config.impl.DefaultConfiguration;
 import cloud.lexium.httpclient.data.HttpMethod;
 import cloud.lexium.httpclient.data.HttpVersion;
 import cloud.lexium.httpclient.data.response.IHttpResponse;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Builder
@@ -19,12 +19,14 @@ public class HttpRequest {
 
     private final String host;
     @Builder.Default private final int port = -1;
+    @Builder.Default private final String path = "/";
+    private final HttpMethod method;
+
     @Builder.Default private final IConfig config = new DefaultConfiguration();
     @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
     private final boolean https;
-    private final Map<String, String[]> params;
-    private final HttpMethod method;
-    @Builder.Default private final String path = "/";
+
+    private final Multimap<String, String> params;
 
     public CompletableFuture<IHttpResponse> execute() {
         try {
@@ -43,19 +45,10 @@ public class HttpRequest {
         }
 
         public HttpRequestBuilder params(String... params) {
-            this.params = new HashMap<>();
+            if (this.params == null)
+                this.params = ArrayListMultimap.create();
+
             this.params.putAll(ParamProcessor.parse(params));
-            return this;
-        }
-
-        public HttpRequestBuilder params(String key, String[] value) {
-            this.params = new HashMap<>();
-            this.params.put(key, value);
-            return this;
-        }
-
-        public HttpRequestBuilder params(Map<String, String[]> params) {
-            this.params = params;
             return this;
         }
     }
