@@ -1,4 +1,4 @@
-package cloud.lexium.httpclient.data;
+package cloud.lexium.httpclient;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,13 +2,13 @@ package cloud.lexium.httpclient.data.request;
 
 import cloud.lexium.httpclient.utils.GeneralUtils;
 import com.google.common.collect.Multimap;
+import com.google.common.net.UrlEscapers;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,9 +26,16 @@ public class ParamProcessor {
         if (request.getParams() == null || !canBuild(request))
             return "";
 
-        return "?" + request.getParams().entries().stream()
-                .map(e -> e.getKey() + "=" + encode(e.getValue()))
-                .collect(Collectors.joining("&"));
+        final StringBuilder builder = new StringBuilder();
+
+        builder.insert(0, '?');
+        for (Map.Entry<String, String> entry : request.getParams().entries()) {
+            builder.append(encode(entry.getKey())).append('=')
+                    .append(encode(entry.getValue())).append('&');
+        }
+        builder.deleteCharAt(builder.length() - 1);
+
+        return builder.toString();
     }
 
     private boolean canBuild(HttpRequest request) {
@@ -36,8 +43,8 @@ public class ParamProcessor {
     }
 
     @SneakyThrows
-    private String encode(String s) {
-        return URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
+    public String encode(String s) {
+        return UrlEscapers.urlPathSegmentEscaper().escape(s);
     }
 
     private List<String> extract(int start, List<String> data) {

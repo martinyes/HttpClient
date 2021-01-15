@@ -1,10 +1,10 @@
 package cloud.lexium.httpclient.data.request;
 
 import cloud.lexium.httpclient.HttpClient;
+import cloud.lexium.httpclient.HttpMethod;
+import cloud.lexium.httpclient.HttpVersion;
 import cloud.lexium.httpclient.config.IConfig;
 import cloud.lexium.httpclient.config.impl.DefaultConfiguration;
-import cloud.lexium.httpclient.data.HttpMethod;
-import cloud.lexium.httpclient.data.HttpVersion;
 import cloud.lexium.httpclient.data.response.IHttpResponse;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class HttpRequest {
 
     private final String host;
-    @Builder.Default private final int port = -1;
+    @Builder.Default private final int port = 80;
     @Builder.Default private final String path = "/";
     private final HttpMethod method;
 

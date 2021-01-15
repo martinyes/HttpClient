@@ -5,11 +5,12 @@ import cloud.lexium.httpclient.data.request.ParamProcessor;
 import lombok.Getter;
 
 import javax.net.ssl.SSLSocketFactory;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 @Getter
 public class SocketClient {
@@ -17,15 +18,15 @@ public class SocketClient {
     public boolean useHttps;
 
     private Socket serverSocket;
-    private DataOutputStream out;
-    private DataInputStream in;
+    private BufferedOutputStream out;
+    private BufferedInputStream in;
 
     public SocketClient(boolean useHttps) {
         this.useHttps = useHttps;
     }
 
     public void connect(InetAddress host, int port) throws IOException {
-        int portToUse = port == -1 ? getDefaultPort() : port;
+        int portToUse = port == 80 ? getDefaultPort() : port;
         if (useHttps) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             this.serverSocket = sslsocketfactory.createSocket(host, portToUse);
@@ -33,8 +34,8 @@ public class SocketClient {
             this.serverSocket = new Socket(host, portToUse);
         }
 
-        this.out = new DataOutputStream(serverSocket.getOutputStream());
-        this.in = new DataInputStream(serverSocket.getInputStream());
+        this.out = new BufferedOutputStream(serverSocket.getOutputStream());
+        this.in = new BufferedInputStream(serverSocket.getInputStream());
     }
 
     public void close() throws IOException {
@@ -55,18 +56,21 @@ public class SocketClient {
 
         out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
                 request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
-                .getBytes());
+                .getBytes(StandardCharsets.UTF_8));
+        out.flush();
 
         return readAsString(in);
     }
 
-    private String readAsString(DataInputStream inputStream) throws IOException {
+    private String readAsString(BufferedInputStream inputStream) throws IOException {
+        long start = System.currentTimeMillis();
         final StringBuilder builder = new StringBuilder();
         final byte[] buffer = new byte[1024];
         int read;
         while ((read = inputStream.read(buffer)) > 0) {
             builder.append(new String(buffer, 0, read));
         }
+        System.out.println("BEOLVASVA SOCKET: " + (System.currentTimeMillis() - start) + " ms");
 
         return builder.toString();
     }
