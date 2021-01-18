@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * @author martin
+ */
 @AllArgsConstructor
 public class DefaultHttpResponse implements HttpResponse {
 

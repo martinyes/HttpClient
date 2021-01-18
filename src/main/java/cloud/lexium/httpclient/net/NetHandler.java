@@ -6,6 +6,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 
+/**
+ * @author martin
+ */
 public interface NetHandler {
 
     void connect(InetAddress p0, int p1) throws IOException;

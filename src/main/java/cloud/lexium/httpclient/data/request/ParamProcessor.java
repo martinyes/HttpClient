@@ -12,18 +12,38 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A builder for building query URL.
+ * <p>
+ * The ParamProcessor is used to create a query String with the given parameters.
+ *
+ * @author martin
+ */
 @UtilityClass
 public class ParamProcessor {
 
-    public Multimap<String, String> parse(String[] params) {
+    /**
+     * This method is used to generate a MultiMap from the given params.
+     *
+     * @param params the params
+     * @return a MultiMap built from params
+     */
+    public Multimap<String, String> parseParams(String[] params) {
         List<String> keys = extract(0, Arrays.asList(params));
         List<String> values = extract(1, Arrays.asList(params));
 
         return GeneralUtils.zipToMap(keys, values);
     }
 
+    /**
+     * This method is used to build the actual query String
+     * using the given HTTP Request params parsed with {@link ParamProcessor#parseParams(String[])}.
+     *
+     * @param request the request
+     * @return the query String
+     */
     public String buildQueryURL(HttpRequest request) {
-        if (request.getParams() == null || !canBuild(request))
+        if (request.getParams() == null || !shouldBuild(request))
             return "";
 
         final StringBuilder builder = new StringBuilder();
@@ -38,13 +58,22 @@ public class ParamProcessor {
         return builder.toString();
     }
 
-    private boolean canBuild(HttpRequest request) {
-        return !request.getParams().isEmpty();
-    }
-
+    /**
+     * This method encodes the given String.
+     * <p>
+     * URL encoding translates special characters from the URL to a representation
+     * that adheres to the spec and can be correctly understood and interpreted.
+     *
+     * @param s the String that needs to be encoded
+     * @return the encoded String
+     */
     @SneakyThrows
     public String encode(String s) {
         return UrlEscapers.urlPathSegmentEscaper().escape(s);
+    }
+
+    private boolean shouldBuild(HttpRequest request) {
+        return !request.getParams().isEmpty();
     }
 
     private List<String> extract(int start, List<String> data) {

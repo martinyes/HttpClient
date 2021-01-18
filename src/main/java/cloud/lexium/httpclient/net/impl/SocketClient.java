@@ -13,6 +13,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author martin
+ */
 @Getter
 public class SocketClient implements NetHandler {
 
@@ -41,6 +44,13 @@ public class SocketClient implements NetHandler {
     }
 
     @Override
+    public void disconnect() throws IOException {
+        this.out.close();
+        this.in.close();
+        this.serverSocket.close();
+    }
+
+    @Override
     public String send(HttpRequest request) throws IOException {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
         String queryParam = ParamProcessor.buildQueryURL(request);
@@ -56,13 +66,6 @@ public class SocketClient implements NetHandler {
     }
 
     @Override
-    public void disconnect() throws IOException {
-        this.out.close();
-        this.in.close();
-        this.serverSocket.close();
-    }
-
-    @Override
     public String read(BufferedInputStream in) throws IOException {
         final StringBuilder builder = new StringBuilder();
         final byte[] buffer = new byte[1024];
@@ -74,7 +77,7 @@ public class SocketClient implements NetHandler {
         return builder.toString();
     }
 
-    public int getDefaultPort() {
+    private int getDefaultPort() {
         return useHttps ? 443 : 80;
     }
 }

@@ -3,6 +3,11 @@ package cloud.lexium.httpclient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * The version of the HTTP protocol.
+ *
+ * @author martin
+ */
 @AllArgsConstructor
 @Getter
 public enum HttpVersion {

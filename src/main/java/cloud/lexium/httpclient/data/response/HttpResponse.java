@@ -4,17 +4,9 @@ import cloud.lexium.httpclient.data.request.HttpRequest;
 
 import java.util.Map;
 
-/*@Getter
-@Setter
-public class HttpResponse {
-
-    private HttpRequest request;
-    private int statusCode;
-    private int contentLength;
-    private String protocol;
-    private String header;
-    private String body;
-}*/
+/**
+ * @author martin
+ */
 public interface HttpResponse {
 
     HttpRequest request();
