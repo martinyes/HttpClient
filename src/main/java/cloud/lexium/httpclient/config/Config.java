@@ -2,7 +2,7 @@ package cloud.lexium.httpclient.config;
 
 import java.time.Duration;
 
-public interface IConfig {
+public interface Config {
 
     Duration readTimeout();
 

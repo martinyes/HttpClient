@@ -15,7 +15,7 @@ public class HttpResponse {
     private String header;
     private String body;
 }*/
-public interface IHttpResponse {
+public interface HttpResponse {
 
     HttpRequest request();
 

@@ -1,10 +1,10 @@
 package cloud.lexium.httpclient.config.impl;
 
-import cloud.lexium.httpclient.config.IConfig;
+import cloud.lexium.httpclient.config.Config;
 
 import java.time.Duration;
 
-public class DefaultConfiguration implements IConfig {
+public class DefaultConfig implements Config {
 
     @Override
     public Duration readTimeout() {

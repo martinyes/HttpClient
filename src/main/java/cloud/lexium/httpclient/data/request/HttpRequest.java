@@ -3,9 +3,9 @@ package cloud.lexium.httpclient.data.request;
 import cloud.lexium.httpclient.HttpClient;
 import cloud.lexium.httpclient.HttpMethod;
 import cloud.lexium.httpclient.HttpVersion;
-import cloud.lexium.httpclient.config.IConfig;
-import cloud.lexium.httpclient.config.impl.DefaultConfiguration;
-import cloud.lexium.httpclient.data.response.IHttpResponse;
+import cloud.lexium.httpclient.config.Config;
+import cloud.lexium.httpclient.config.impl.DefaultConfig;
+import cloud.lexium.httpclient.data.response.HttpResponse;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Builder;
@@ -22,15 +22,15 @@ public class HttpRequest {
     @Builder.Default private final String path = "/";
     private final HttpMethod method;
 
-    @Builder.Default private final IConfig config = new DefaultConfiguration();
+    @Builder.Default private final Config config = new DefaultConfig();
     @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
     private final boolean https;
 
     private final Multimap<String, String> params;
 
-    public CompletableFuture<IHttpResponse> execute() {
+    public CompletableFuture<HttpResponse> execute() {
         try {
-            return CompletableFuture.completedFuture(new HttpClient().sendRequest(this));
+            return CompletableFuture.completedFuture(new HttpClient().send(this));
         } catch (Exception e) {
             e.printStackTrace();
         }

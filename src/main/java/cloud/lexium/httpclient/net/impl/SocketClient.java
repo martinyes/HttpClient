@@ -1,7 +1,8 @@
-package cloud.lexium.httpclient.socket;
+package cloud.lexium.httpclient.net.impl;
 
 import cloud.lexium.httpclient.data.request.HttpRequest;
 import cloud.lexium.httpclient.data.request.ParamProcessor;
+import cloud.lexium.httpclient.net.NetHandler;
 import lombok.Getter;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -13,7 +14,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 @Getter
-public class SocketClient {
+public class SocketClient implements NetHandler {
 
     public boolean useHttps;
 
@@ -25,29 +26,21 @@ public class SocketClient {
         this.useHttps = useHttps;
     }
 
-    public void connect(InetAddress host, int port) throws IOException {
+    @Override
+    public void connect(InetAddress address, int port) throws IOException {
         int portToUse = port == 80 ? getDefaultPort() : port;
         if (useHttps) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            this.serverSocket = sslsocketfactory.createSocket(host, portToUse);
+            this.serverSocket = sslsocketfactory.createSocket(address, portToUse);
         } else {
-            this.serverSocket = new Socket(host, portToUse);
+            this.serverSocket = new Socket(address, portToUse);
         }
 
         this.out = new BufferedOutputStream(serverSocket.getOutputStream());
         this.in = new BufferedInputStream(serverSocket.getInputStream());
     }
 
-    public void close() throws IOException {
-        this.out.close();
-        this.in.close();
-        this.serverSocket.close();
-    }
-
-    public int getDefaultPort() {
-        return useHttps ? 443 : 80;
-    }
-
+    @Override
     public String send(HttpRequest request) throws IOException {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
         String queryParam = ParamProcessor.buildQueryURL(request);
@@ -59,19 +52,29 @@ public class SocketClient {
                 .getBytes(StandardCharsets.UTF_8));
         out.flush();
 
-        return readAsString(in);
+        return read(in);
     }
 
-    private String readAsString(BufferedInputStream inputStream) throws IOException {
-        long start = System.currentTimeMillis();
+    @Override
+    public void disconnect() throws IOException {
+        this.out.close();
+        this.in.close();
+        this.serverSocket.close();
+    }
+
+    @Override
+    public String read(BufferedInputStream in) throws IOException {
         final StringBuilder builder = new StringBuilder();
         final byte[] buffer = new byte[1024];
         int read;
-        while ((read = inputStream.read(buffer)) > 0) {
+        while ((read = in.read(buffer)) > 0) {
             builder.append(new String(buffer, 0, read));
         }
-        System.out.println("BEOLVASVA SOCKET: " + (System.currentTimeMillis() - start) + " ms");
 
         return builder.toString();
+    }
+
+    public int getDefaultPort() {
+        return useHttps ? 443 : 80;
     }
 }

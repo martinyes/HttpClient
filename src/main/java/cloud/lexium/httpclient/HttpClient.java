@@ -1,9 +1,9 @@
 package cloud.lexium.httpclient;
 
 import cloud.lexium.httpclient.data.request.HttpRequest;
-import cloud.lexium.httpclient.data.response.IHttpResponse;
-import cloud.lexium.httpclient.data.response.impl.HttpResponseImpl;
-import cloud.lexium.httpclient.socket.SocketClient;
+import cloud.lexium.httpclient.data.response.HttpResponse;
+import cloud.lexium.httpclient.data.response.impl.DefaultHttpResponse;
+import cloud.lexium.httpclient.net.impl.SocketClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -11,12 +11,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpClient {
 
-    public IHttpResponse sendRequest(HttpRequest request) throws Exception {
+    public HttpResponse send(HttpRequest request) throws Exception {
         SocketClient client = new SocketClient(request.isHttps());
 
         client.connect(InetAddress.getByName(request.getHost()), request.getPort());
 
-        CompletableFuture<IHttpResponse> future = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<HttpResponse> future = CompletableFuture.supplyAsync(() -> {
             try {
                 return parseResponse(client.send(request), request);
             } catch (IOException e) {
@@ -28,7 +28,7 @@ public class HttpClient {
                 ex.printStackTrace();
 
             try {
-                client.close();
+                client.disconnect();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -37,7 +37,7 @@ public class HttpClient {
         return future.get();
     }
 
-    private IHttpResponse parseResponse(String data, HttpRequest request) throws IOException {
+    private HttpResponse parseResponse(String data, HttpRequest request) throws IOException {
         /*
          * HTTP Response structure
          *
@@ -51,14 +51,10 @@ public class HttpClient {
         StringBuilder headerBuilder = new StringBuilder();
         StringBuilder bodyBuilder = new StringBuilder();
 
-        System.out.println(data);
-
         for (String message : messages) {
             boolean blankLine = !message.matches("-*\\w.*"); // Checks for at least one ASCII char
-
-
         }
 
-        return new HttpResponseImpl(request, -1, null, null);
+        return new DefaultHttpResponse(request, -1, null, null);
     }
 }
