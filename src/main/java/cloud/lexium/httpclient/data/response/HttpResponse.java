@@ -1,15 +1,23 @@
 package cloud.lexium.httpclient.data.response;
 
-import com.google.gson.JsonObject;
-import lombok.Getter;
-import lombok.Setter;
+import cloud.lexium.httpclient.data.request.HttpRequest;
 
-@Getter
-@Setter
-public class HttpResponse {
+import java.util.Map;
 
-    private int statusCode;
-    private String protocolVersion;
-    private JsonObject header;
-    private JsonObject body;
+/**
+ * @author martin
+ */
+public interface HttpResponse {
+
+    HttpRequest request();
+
+    int statusCode();
+
+    String protocol();
+
+    String statusText();
+
+    Map<String, String> headers();
+
+    String body();
 }
