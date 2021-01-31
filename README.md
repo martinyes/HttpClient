@@ -9,7 +9,7 @@ A lightweight and easy to use HTTP Client.
 * [x] Well-documented
 * [x] Support for using multiple connection scheme
 * [x] Both Sync (blocking) and Async (non-blocking) API
-  - Using Future for the async API
+  - Using CompletableFuture for the async API
 * [ ] Support for HTTP/2 Protocol
 * [ ] Manipulation of cookies
 * [ ] Support for HTTP authentication protocols
