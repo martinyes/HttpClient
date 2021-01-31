@@ -2,7 +2,7 @@ A lightweight and easy to use HTTP Client.
 
 ## Supported Protocols
 - HTTP/1.0
-- ~~HTTP/1.1
+- ~~HTTP/1.1~~
 - ~~HTTP/2~~
 
 ## Features
