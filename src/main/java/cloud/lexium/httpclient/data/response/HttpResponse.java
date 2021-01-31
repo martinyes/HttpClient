@@ -13,9 +13,9 @@ public interface HttpResponse {
 
     int statusCode();
 
-    int contentLength();
-
     String protocol();
+
+    String statusText();
 
     Map<String, String> headers();
 

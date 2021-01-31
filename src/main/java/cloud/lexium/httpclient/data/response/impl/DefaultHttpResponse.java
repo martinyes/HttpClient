@@ -13,7 +13,9 @@ import java.util.Map;
 public class DefaultHttpResponse implements HttpResponse {
 
     private HttpRequest request;
+    private String protocol;
     private int statusCode;
+    private String statusText;
     private Map<String, String> headers;
     private String body;
 
@@ -28,13 +30,13 @@ public class DefaultHttpResponse implements HttpResponse {
     }
 
     @Override
-    public int contentLength() {
-        return Integer.parseInt(headers.get("Content-Length"));
+    public String protocol() {
+        return protocol;
     }
 
     @Override
-    public String protocol() {
-        return request.getVersion().getHeaderName();
+    public String statusText() {
+        return statusText;
     }
 
     @Override

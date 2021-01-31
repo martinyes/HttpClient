@@ -55,8 +55,6 @@ public class SocketClient implements NetHandler {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
         String queryParam = ParamProcessor.buildQueryURL(request);
 
-        System.out.println(queryParam);
-
         out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
                 request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
                 .getBytes(StandardCharsets.UTF_8));

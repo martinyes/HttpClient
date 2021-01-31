@@ -2,12 +2,13 @@ package cloud.lexium.httpclient;
 
 import cloud.lexium.httpclient.data.request.HttpRequest;
 import cloud.lexium.httpclient.data.response.HttpResponse;
-import cloud.lexium.httpclient.data.response.impl.DefaultHttpResponse;
+import cloud.lexium.httpclient.data.response.scheme.impl.DefaultScheme;
 import cloud.lexium.httpclient.net.impl.SocketClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * HTTP Client.
@@ -48,47 +49,33 @@ public class HttpClient {
      * @return a CompletableFuture<HttpResponse>
      * @throws IOException
      */
-    public CompletableFuture<HttpResponse> sendAsync(HttpRequest request) throws IOException {
+    public HttpResponse sendAsync(HttpRequest request) throws IOException {
         SocketClient client = new SocketClient(request.isHttps());
         client.connect(InetAddress.getByName(request.getHost()), request.getPort());
 
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return parseResponse(client.send(request), request);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).whenComplete((__, ex) -> {
-            if (ex != null)
-                ex.printStackTrace();
+        try {
+            return CompletableFuture.supplyAsync(() -> {
+                try {
+                    String data = client.send(request);
+                    client.disconnect();
 
-            try {
-                client.disconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+                    return parseResponse(data, request);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private HttpResponse parseResponse(String data, HttpRequest request) throws IOException {
-        /*
-         * HTTP Response structure
-         *
-         * 1) status message
-         * 2) an optional set of http headers
-         * 3) a blank line indicating all meta-information
-         * 4) an optional body content
-         */
-
-        String[] messages = data.split("\r\n");
-        StringBuilder headerBuilder = new StringBuilder();
-        StringBuilder bodyBuilder = new StringBuilder();
-
-        for (String message : messages) {
-            boolean blankLine = !message.matches("-*\\w.*"); // Checks for at least one ASCII char
+        if (request.getVersion() == HttpVersion.HTTP_2) {
+            return null;
         }
 
-        return new DefaultHttpResponse(request, -1, null, null);
+        return new DefaultScheme().parseResponse(request, data);
     }
 }
