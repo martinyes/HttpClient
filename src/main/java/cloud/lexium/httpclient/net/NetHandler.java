@@ -5,6 +5,7 @@ import cloud.lexium.httpclient.data.request.HttpRequest;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.Future;
 
 /**
  * @author martin
@@ -15,7 +16,7 @@ public interface NetHandler {
 
     void disconnect() throws IOException;
 
-    String send(HttpRequest p0) throws IOException;
+    void send(HttpRequest p0) throws IOException;
 
     String read(BufferedInputStream p0) throws IOException;
 }

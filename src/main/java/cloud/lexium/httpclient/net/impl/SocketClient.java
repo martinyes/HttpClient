@@ -9,6 +9,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +23,7 @@ public class SocketClient implements NetHandler {
     public boolean useHttps;
 
     private Socket serverSocket;
-    private BufferedOutputStream out;
+    private OutputStream out;
     private BufferedInputStream in;
 
     public SocketClient(boolean useHttps) {
@@ -51,7 +52,7 @@ public class SocketClient implements NetHandler {
     }
 
     @Override
-    public String send(HttpRequest request) throws IOException {
+    public void send(HttpRequest request) throws IOException {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
         String queryParam = ParamProcessor.buildQueryURL(request);
 
@@ -59,8 +60,6 @@ public class SocketClient implements NetHandler {
                 request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
                 .getBytes(StandardCharsets.UTF_8));
         out.flush();
-
-        return read(in);
     }
 
     @Override

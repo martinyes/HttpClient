@@ -46,6 +46,9 @@ public class ParamProcessor {
         if (request.getParams() == null || !shouldBuild(request))
             return "";
 
+        if (request.getParams().size() % 2 != 0)
+            throw new IllegalArgumentException("Need both key and value for parameters.");
+
         final StringBuilder builder = new StringBuilder();
 
         builder.insert(0, '?');

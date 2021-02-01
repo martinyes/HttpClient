@@ -63,7 +63,7 @@ public class HttpRequest {
      */
     public CompletableFuture<HttpResponse> sendAsync() {
         try {
-            return CompletableFuture.completedFuture(new HttpClient().sendAsync(this));
+            return new HttpClient().sendAsync(this);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -6,12 +6,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleHttpTest {
 
+    private CountDownLatch lock = new CountDownLatch(1);
+
     @Test
     @DisplayName("Simple JUnit test to test a GET request")
-    void simpleJUnitTestToTestAGetRequest() {
+    void simpleJUnitTestToTestAGetRequest() throws InterruptedException {
         CompletableFuture<HttpResponse> future = HttpRequest.builder()
                 .host("postman-echo.com")
                 .path("/get")
@@ -21,7 +25,9 @@ public class SimpleHttpTest {
                 .sendAsync();
 
         future.whenComplete((res, ex) -> {
-            System.out.println(res.protocol());
+            System.out.println(res.body());
         });
+
+        lock.await(2000, TimeUnit.MILLISECONDS);
     }
 }

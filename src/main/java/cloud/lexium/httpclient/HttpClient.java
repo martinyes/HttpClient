@@ -4,11 +4,13 @@ import cloud.lexium.httpclient.data.request.HttpRequest;
 import cloud.lexium.httpclient.data.response.HttpResponse;
 import cloud.lexium.httpclient.data.response.scheme.impl.DefaultScheme;
 import cloud.lexium.httpclient.net.impl.SocketClient;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * HTTP Client.
@@ -30,6 +32,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class HttpClient {
 
+    private final ExecutorService EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
+
     /**
      * This method used to send the given request synchronously.
      * It blocks the thread until the request has been send and a response has been received.
@@ -49,29 +53,30 @@ public class HttpClient {
      * @return a CompletableFuture<HttpResponse>
      * @throws IOException
      */
-    public HttpResponse sendAsync(HttpRequest request) throws IOException {
+    public CompletableFuture<HttpResponse> sendAsync(HttpRequest request) throws IOException {
         SocketClient client = new SocketClient(request.isHttps());
         client.connect(InetAddress.getByName(request.getHost()), request.getPort());
 
-        try {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    String data = client.send(request);
-                    client.disconnect();
+        CompletableFuture<HttpResponse> future = new CompletableFuture<>();
 
-                    return parseResponse(data, request);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        }
+        EXECUTOR.submit(() -> {
+            try {
+                client.send(request);
+
+                HttpResponse res = parseResponse(client.read(client.getIn()), request);
+                future.complete(res);
+                client.disconnect();
+            } catch (Throwable t) {
+                future.completeExceptionally(t);
+            }
+        });
+
+        EXECUTOR.shutdown();
+
+        return future;
     }
 
-    private HttpResponse parseResponse(String data, HttpRequest request) throws IOException {
+    private HttpResponse parseResponse(String data, HttpRequest request) {
         if (request.getVersion() == HttpVersion.HTTP_2) {
             return null;
         }
