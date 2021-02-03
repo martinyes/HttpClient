@@ -1,4 +1,4 @@
-A lightweight and easy to use HTTP Client with the same syntax as **_Java 9+ HTTP Client_**
+A lightweight and easy to use HTTP Client.
 
 ## Supported Protocols
 - HTTP/1.0
