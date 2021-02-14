@@ -24,7 +24,7 @@ A lightweight and easy to use HTTP Client.
 
 ## Basic classes
    - **_HttpRequest_** – represents the request to be sent via the **_HttpClient_**
-   - **_HttpClient_** – made for sending multiple requests and set up its configuration information
+   - **_HttpClient_** – represents a container, used to send multiple requests and set up its configuration
    - **_HttpResponse_** – represents the result of an **_HttpRequest_** call
 
 ## Usage
