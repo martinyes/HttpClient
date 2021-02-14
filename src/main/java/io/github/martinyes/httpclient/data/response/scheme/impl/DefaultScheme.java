@@ -37,7 +37,10 @@ public class DefaultScheme implements ResponseScheme {
     public HttpResponse parseResponse(HttpRequest request, String data) {
         Map<String, String> headers = parseHeaders(data);
 
-        if (headers.containsValue("chunked"))
+        // Check whether the response is transferred by chunks or not.
+        // If so, we simply change the parsing algorithm to the chunked implementation.
+        if (headers.containsKey("Transfer-Encoding") &&
+                headers.get("Transfer-Encoding").equals("chunked"))
             return new ChunkedScheme().parseResponse(request, data);
 
         String[] messages = data.split("\r\n");

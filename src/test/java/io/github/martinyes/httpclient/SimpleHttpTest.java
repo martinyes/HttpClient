@@ -11,23 +11,26 @@ import java.util.concurrent.TimeUnit;
 
 public class SimpleHttpTest {
 
-    private CountDownLatch lock = new CountDownLatch(1);
+    private final CountDownLatch LOCK = new CountDownLatch(1);
+
+    private static final HttpClient POSTMAN_CLIENT = HttpClient.newClient()
+            .host("postman-echo.com")
+            .https()
+            .build();
 
     @Test
     @DisplayName("Simple JUnit test to test a GET request")
-    void simpleJUnitTestToTestAGetRequest() throws InterruptedException {
-        CompletableFuture<HttpResponse> future = HttpRequest.builder()
-                .host("postman-echo.com")
+    void simpleJUnitTestToTestAGetRequest() throws Exception {
+        HttpRequest request = HttpRequest.builder()
                 .path("/get")
-                .https()
                 .method(HttpMethod.GET)
-                .build()
-                .sendAsync();
+                .build();
+        CompletableFuture<HttpResponse> res = POSTMAN_CLIENT.sendAsync(request);
 
-        future.whenComplete((res, ex) -> {
-            System.out.println(res.body());
+        res.whenComplete((r, ex) -> {
+            System.out.println(r.body());
         });
 
-        lock.await(2000, TimeUnit.MILLISECONDS);
+        LOCK.await(2000, TimeUnit.MILLISECONDS);
     }
 }

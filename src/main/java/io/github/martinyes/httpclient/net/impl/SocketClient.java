@@ -1,5 +1,6 @@
 package io.github.martinyes.httpclient.net.impl;
 
+import io.github.martinyes.httpclient.HttpClient;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.request.ParamProcessor;
 import io.github.martinyes.httpclient.net.ClientHandler;
@@ -15,25 +16,27 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * An implementation to {@link ClientHandler} using Java Sockets.
+ * <p>
+ * This class provides basic I/O operations to send headers and get responses through Sockets.
+ *
  * @author martin
  */
 @Getter
 public class SocketClient implements ClientHandler {
 
-    public boolean useHttps;
+    public boolean https;
 
     private Socket serverSocket;
     private OutputStream out;
     private BufferedInputStream in;
 
-    public SocketClient(boolean useHttps) {
-        this.useHttps = useHttps;
-    }
-
     @Override
-    public void connect(InetAddress address, int port) throws IOException {
+    public void connect(InetAddress address, int port, boolean https) throws IOException {
+        this.https = https;
+
         int portToUse = port == 80 ? getDefaultPort() : port;
-        if (useHttps) {
+        if (https) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             this.serverSocket = sslsocketfactory.createSocket(address, portToUse);
         } else {
@@ -52,18 +55,18 @@ public class SocketClient implements ClientHandler {
     }
 
     @Override
-    public void send(HttpRequest request) throws IOException {
+    public void send(HttpClient client, HttpRequest request) throws IOException {
         String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
         String queryParam = ParamProcessor.buildQueryURL(request);
 
         out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
-                request.getVersion().getHeaderName(), request.getHost() + ":" + getDefaultPort())
+                request.getVersion().getHeaderName(), client.getHost() + ":" + getDefaultPort())
                 .getBytes(StandardCharsets.UTF_8));
         out.flush();
     }
 
     @Override
-    public String read(BufferedInputStream in) throws IOException {
+    public String read() throws IOException {
         final StringBuilder builder = new StringBuilder();
         final byte[] buffer = new byte[1024];
         int read;
@@ -75,6 +78,6 @@ public class SocketClient implements ClientHandler {
     }
 
     private int getDefaultPort() {
-        return useHttps ? 443 : 80;
+        return https ? 443 : 80;
     }
 }
