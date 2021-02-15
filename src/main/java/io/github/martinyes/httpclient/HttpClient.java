@@ -49,7 +49,8 @@ public class HttpClient {
      * It blocks the thread until the request has been send and a response has been received.
      *
      * @param request the configured request
-     * @return a HTTP Response
+     * @return an HTTP Response
+     * @throws IOException if an I/O error occurs when sending or receiving
      */
     public HttpResponse send(HttpRequest request) throws IOException {
         ClientHandler client = request.getHandler();
@@ -66,7 +67,7 @@ public class HttpClient {
      *
      * @param request the configured request
      * @return a CompletableFuture<HttpResponse>
-     * @throws IOException
+     * @throws IOException if an I/O error occurs when sending or receiving
      */
     public CompletableFuture<HttpResponse> sendAsync(HttpRequest request) throws IOException {
         ClientHandler client = request.getHandler();

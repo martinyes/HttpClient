@@ -11,18 +11,19 @@ A lightweight and easy to use HTTP Client.
 * [x] Both Sync (blocking) and Async (non-blocking) API
   - Using CompletableFuture for the async API
 * [ ] Support for HTTP/2 Protocol
+* [x] Params and Headers Factory class
 * [ ] Manipulation of cookies
 * [ ] Support for HTTP authentication protocols
   - HTTP Basic
   - Digest
-* [ ] Caching
 * [ ] Compression
 * [x] Configuration options
   - Connection, read timeout
   - Authentication settings
   - Redirect policy
+  - Custom Executor
 
-## Basic classes
+## Core classes
    - **_HttpRequest_** – represents the request to be sent via the **_HttpClient_**
    - **_HttpClient_** – made for sending multiple requests and set up its configuration information
    - **_HttpResponse_** – represents the result of an **_HttpRequest_** call

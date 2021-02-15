@@ -49,16 +49,31 @@ public class HttpRequest {
      * @author martin
      */
     public static class HttpRequestBuilder {
+        public HttpRequestBuilder() {
+            if (this.params == null)
+                this.params = ArrayListMultimap.create();
+        }
+
         public HttpRequestBuilder disableRedirects() {
             this.disableRedirects$set = true;
             return this;
         }
 
-        public HttpRequestBuilder params(String... params) {
-            if (this.params == null)
-                this.params = ArrayListMultimap.create();
+        public HttpRequestBuilder headers(String... headers) {
+            return this;
+        }
 
+        public HttpRequestBuilder header(String key, String value) {
+            return this;
+        }
+
+        public HttpRequestBuilder params(String... params) {
             this.params.putAll(ParamProcessor.parseParams(params));
+            return this;
+        }
+
+        public HttpRequestBuilder param(String key, String value) {
+            this.params(key, value);
             return this;
         }
     }

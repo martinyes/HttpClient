@@ -1,8 +1,8 @@
 package io.github.martinyes.httpclient.data.request;
 
-import io.github.martinyes.httpclient.utils.GeneralUtils;
 import com.google.common.collect.Multimap;
 import com.google.common.net.UrlEscapers;
+import io.github.martinyes.httpclient.utils.GeneralUtils;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
@@ -29,6 +29,9 @@ public class ParamProcessor {
      * @return a MultiMap built from params
      */
     public Multimap<String, String> parseParams(String[] params) {
+        if (params.length % 2 != 0)
+            throw new IllegalArgumentException("Need both key and value for parameters.");
+
         List<String> keys = extract(0, Arrays.asList(params));
         List<String> values = extract(1, Arrays.asList(params));
 
@@ -45,9 +48,6 @@ public class ParamProcessor {
     public String buildQueryURL(HttpRequest request) {
         if (request.getParams() == null || !shouldBuild(request))
             return "";
-
-        if (request.getParams().size() % 2 != 0)
-            throw new IllegalArgumentException("Need both key and value for parameters.");
 
         final StringBuilder builder = new StringBuilder();
 
