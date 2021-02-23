@@ -28,7 +28,7 @@ public class SocketClient implements ClientHandler {
     public boolean https;
 
     private Socket serverSocket;
-    private OutputStream out;
+    private BufferedOutputStream out;
     private BufferedInputStream in;
 
     @Override

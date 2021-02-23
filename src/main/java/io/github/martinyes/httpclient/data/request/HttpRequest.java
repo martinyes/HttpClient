@@ -42,7 +42,6 @@ public class HttpRequest {
 
     private final Multimap<String, String> params;
 
-
     /**
      * HTTP Request Builder Class.
      *
@@ -50,8 +49,7 @@ public class HttpRequest {
      */
     public static class HttpRequestBuilder {
         public HttpRequestBuilder() {
-            if (this.params == null)
-                this.params = ArrayListMultimap.create();
+            this.params = ArrayListMultimap.create();
         }
 
         public HttpRequestBuilder disableRedirects() {

@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author martin
  */
-public interface HttpResponse {
+public interface HttpResponse<T> {
 
     HttpRequest request();
 
@@ -19,5 +19,5 @@ public interface HttpResponse {
 
     Map<String, String> headers();
 
-    String body();
+    T body();
 }

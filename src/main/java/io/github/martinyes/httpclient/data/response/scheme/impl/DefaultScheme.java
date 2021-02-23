@@ -1,14 +1,15 @@
 package io.github.martinyes.httpclient.data.response.scheme.impl;
 
 import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.HttpResponse;
-import io.github.martinyes.httpclient.data.response.impl.DefaultHttpResponse;
+import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 import io.github.martinyes.httpclient.data.response.scheme.ResponseScheme;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Default implementation to parse responses using the {@link ResponseScheme} interface.
+ *
  * @author martin
  */
 public class DefaultScheme implements ResponseScheme {
@@ -34,11 +35,11 @@ public class DefaultScheme implements ResponseScheme {
     }
 
     @Override
-    public HttpResponse parseResponse(HttpRequest request, String data) {
+    public WrappedHttpResponse parseResponse(HttpRequest request, String data) {
         Map<String, String> headers = parseHeaders(data);
 
         // Check whether the response is transferred by chunks or not.
-        // If so, we simply change the parsing algorithm to the chunked implementation.
+        // If so, we simply change the parsing algorithm to the chunked one.
         if (headers.containsKey("Transfer-Encoding") &&
                 headers.get("Transfer-Encoding").equals("chunked"))
             return new ChunkedScheme().parseResponse(request, data);
@@ -69,7 +70,7 @@ public class DefaultScheme implements ResponseScheme {
             }
         }
 
-        return new DefaultHttpResponse(request, statusLine[0],
-                Integer.parseInt(statusLine[1]), statusLine[2], headers, bodyBuilder.toString());
+        return new WrappedHttpResponse(new WrappedHttpResponse.WrappedHttpStatus(statusLine[0], Integer.parseInt(statusLine[1]), statusLine[2]),
+                headers, bodyBuilder);
     }
 }

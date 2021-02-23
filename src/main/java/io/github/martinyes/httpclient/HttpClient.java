@@ -1,9 +1,12 @@
 package io.github.martinyes.httpclient;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.martinyes.httpclient.config.Config;
 import io.github.martinyes.httpclient.config.impl.DefaultConfig;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
+import io.github.martinyes.httpclient.data.response.BodyHandler;
 import io.github.martinyes.httpclient.data.response.HttpResponse;
+import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 import io.github.martinyes.httpclient.data.response.scheme.impl.DefaultScheme;
 import io.github.martinyes.httpclient.net.ClientHandler;
 import lombok.Builder;
@@ -11,7 +14,10 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * HTTP Client.
@@ -22,8 +28,8 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Requests can be sent in two ways: synchronously (blocking) or asynchronously (non-blocking).
  * <p>
- * {@link HttpClient#send(HttpRequest)} blocks until the request has been sent and the response has been received.
- * {@link HttpClient#sendAsync(HttpRequest)} sends the request and receives the response asynchronously.
+ * {@link HttpClient#send(HttpRequest, BodyHandler)} blocks until the request has been sent and the response has been received.
+ * {@link HttpClient#sendAsync(HttpRequest, BodyHandler)} sends the request and receives the response asynchronously.
  * It returns immediately with a {@link CompletableFuture<HttpResponse>}
  *
  * @author martin
@@ -35,6 +41,7 @@ public class HttpClient {
     /**
      * Basic options
      */
+    @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
     @Builder.Default private final Config config = new DefaultConfig();
 
     /**
@@ -52,13 +59,13 @@ public class HttpClient {
      * @return an HTTP Response
      * @throws IOException if an I/O error occurs when sending or receiving
      */
-    public HttpResponse send(HttpRequest request) throws IOException {
+    public <T> HttpResponse<T> send(HttpRequest request, BodyHandler<T> bodyHandler) throws IOException {
         ClientHandler client = request.getHandler();
 
         client.connect(InetAddress.getByName(host), port, https);
         client.send(this, request);
 
-        return parseResponse(client.read(), request);
+        return parseResponse(client.read(), request, bodyHandler);
     }
 
     /**
@@ -69,17 +76,18 @@ public class HttpClient {
      * @return a CompletableFuture<HttpResponse>
      * @throws IOException if an I/O error occurs when sending or receiving
      */
-    public CompletableFuture<HttpResponse> sendAsync(HttpRequest request) throws IOException {
+    public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyHandler<T> bodyHandler) throws IOException {
         ClientHandler client = request.getHandler();
         client.connect(InetAddress.getByName(host), port, https);
 
-        CompletableFuture<HttpResponse> future = new CompletableFuture<>();
+        CompletableFuture<HttpResponse<T>> future = new CompletableFuture<>();
+        ExecutorService service = (request.getExecutor() == null ? this.executor : request.getExecutor());
 
-        request.getExecutor().submit(() -> {
+        service.submit(() -> {
             try {
                 client.send(this, request);
 
-                HttpResponse res = parseResponse(client.read(), request);
+                HttpResponse<T> res = parseResponse(client.read(), request, bodyHandler);
                 future.complete(res);
                 client.disconnect();
             } catch (Throwable t) {
@@ -87,17 +95,49 @@ public class HttpClient {
             }
         });
 
-        request.getExecutor().shutdown();
+        service.shutdown();
 
         return future;
     }
 
-    private HttpResponse parseResponse(String data, HttpRequest request) {
+    private <T> HttpResponse<T> parseResponse(String data, HttpRequest request, BodyHandler<T> bodyHandler) {
         if (request.getVersion() == HttpVersion.HTTP_2) {
-            return null;
+            throw new RuntimeException("HTTP/2 protocol is not supported yet.");
         }
 
-        return new DefaultScheme().parseResponse(request, data);
+        WrappedHttpResponse wrapped = new DefaultScheme().parseResponse(request, data);
+
+        return new HttpResponse<T>() {
+            @Override
+            public HttpRequest request() {
+                return request;
+            }
+
+            @Override
+            public int statusCode() {
+                return wrapped.getStatus().getCode();
+            }
+
+            @Override
+            public String protocol() {
+                return wrapped.getStatus().getProtocol();
+            }
+
+            @Override
+            public String statusText() {
+                return wrapped.getStatus().getText();
+            }
+
+            @Override
+            public Map<String, String> headers() {
+                return wrapped.getHeaders();
+            }
+
+            @Override
+            public T body() {
+                return bodyHandler.apply(wrapped);
+            }
+        };
     }
 
     /**

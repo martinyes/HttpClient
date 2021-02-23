@@ -2,6 +2,7 @@ package io.github.martinyes.httpclient;
 
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.HttpResponse;
+import io.github.martinyes.httpclient.data.response.body.ByteArrayBodyHandler;
 import io.github.martinyes.httpclient.data.response.body.StringBodyHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class SimpleHttpTest {
+public class BodyTransformersTest {
 
     private final CountDownLatch LOCK = new CountDownLatch(1);
 
@@ -20,8 +21,8 @@ public class SimpleHttpTest {
             .build();
 
     @Test
-    @DisplayName("Simple JUnit test to test a GET request")
-    void simpleJUnitTestToTestAGetRequest() throws Exception {
+    @DisplayName("Test String as body type")
+    void testStringAsBodyType() throws Exception {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
@@ -36,26 +37,18 @@ public class SimpleHttpTest {
     }
 
     @Test
-    @DisplayName("JUnit Test to test query parameters in GET requests")
-    void junitTestToTestQueryParametersInGetRequests() throws Exception {
+    @DisplayName("Test byte array as body type")
+    void testByteArrayAsBodyType() throws Exception {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
-                .params("key1", "value1", "key1", "value2")
-                .param("key1", "value3")
-                .param("key2", "value4")
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, new StringBodyHandler());
+        CompletableFuture<HttpResponse<byte[]>> res = POSTMAN_CLIENT.sendAsync(request, new ByteArrayBodyHandler());
 
         res.whenComplete((r, ex) -> {
-            System.out.println(r.body());
+            System.out.println(new String(r.body()));
         });
 
         LOCK.await(2000, TimeUnit.MILLISECONDS);
-    }
-
-    @Test
-    @DisplayName("JUnit Test to test adding additional headers to the request")
-    void jUnitTestToTestAddingAdditionalHeadersToTheRequest() {
     }
 }
