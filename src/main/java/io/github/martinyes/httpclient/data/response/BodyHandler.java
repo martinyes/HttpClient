@@ -1,8 +1,6 @@
 package io.github.martinyes.httpclient.data.response;
 
 import io.github.martinyes.httpclient.HttpClient;
-import io.github.martinyes.httpclient.data.response.body.ByteArrayBodyHandler;
-import io.github.martinyes.httpclient.data.response.body.StringBodyHandler;
 import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 
 /**
@@ -11,21 +9,25 @@ import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
  * A BodyHandler takes a {@link WrappedHttpResponse} which contains everything about a response.
  * It is invoked once we are parsing the response in {@link HttpClient}.
  * <p>
- * There are various <b>predefined</b> body handlers like:
+ * There are various <b>predefined</b> body types like:
  * <ul>
- *  <li>String BodyHandler</li>
- *      HttpResponse<String> response = client
- *          .send(request, new {@link StringBodyHandler}());
- *  <li>Byte Array BodyHandler</li>
- *      HttpResponse<byte[]> response = client
- *          .send(request, new {@link ByteArrayBodyHandler}());
- *  <li>File BodyHandler</li>
- *      HttpResponse<Path> response = client
- *          .send(request, new PathBodyHandler())
+ *  <li><b>String Body</b></li>
+ *  <li><b>Bytes Body</b></li>
+ *  <li><b>File Body</b></li>
  * </ul>
  *
- * @param <T>
+ * <pre>
+ *     {@code
+ *     // Receives the response body as String
+ *     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.asString());
+ *
+ *     // Receives the response body as bytes
+ *     HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.asBytes());
+ *     }</pre>
+ *
+ * @param <T> response body type
  * @author martin
+ * @since 2
  */
 @FunctionalInterface
 public interface BodyHandler<T> {

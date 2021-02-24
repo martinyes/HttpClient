@@ -15,12 +15,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * This class represents an HTTP Request with all its configuration options, like: protocol version, method, etc.
+ * This class represents an HTTP Request with the support for changing its values like:
+ * <ul>
+ *  <li>Version</li>
+ *  <li>Method</li>
+ *  <li>Executor</li>
+ *  <li>Timeouts</li>
+ * </ul>
  * <p>
- * These requests sent through an HTTP Client {@link HttpClient}, that can be created manually
+ * These requests sent through an {@link HttpClient}, that can be created manually
  * through a HTTP Client Builder.
  *
  * @author martin
+ * @since 1
  */
 @Builder
 @Getter
@@ -46,6 +53,7 @@ public class HttpRequest {
      * HTTP Request Builder Class.
      *
      * @author martin
+     * @since 2
      */
     public static class HttpRequestBuilder {
         public HttpRequestBuilder() {

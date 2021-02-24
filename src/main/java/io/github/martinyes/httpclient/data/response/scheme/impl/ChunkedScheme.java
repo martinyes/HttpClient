@@ -7,7 +7,7 @@ import io.github.martinyes.httpclient.data.response.scheme.ResponseScheme;
 import java.util.Map;
 
 /**
- * Chunked implementation to parse responses sent in chunks using the {@link ResponseScheme } interface.
+ * Chunked implementation to parse responses sent in chunks using the {@link ResponseScheme} interface.
  *
  * @author martin
  */

@@ -9,6 +9,7 @@ import java.util.Map;
  * A class responsible for wrapping HTTP responses.
  *
  * @author martin
+ * @since 2
  */
 @AllArgsConstructor
 @Getter

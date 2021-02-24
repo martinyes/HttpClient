@@ -4,21 +4,29 @@ import io.github.martinyes.httpclient.data.response.BodyHandler;
 import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 /**
  * Byte array Body Handler.
  *
  * @author martin
+ * @since 2
  */
-public class ByteArrayBodyHandler implements BodyHandler<byte[]> {
+public final class ByteArrayBodyHandler implements BodyHandler<byte[]> {
+
+    private Charset charset;
+
+    public ByteArrayBodyHandler() {
+
+    }
+
+    public ByteArrayBodyHandler(Charset charset) {
+        this.charset = charset;
+    }
 
     @Override
     public byte[] apply(WrappedHttpResponse res) {
-        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+        CharsetEncoder encoder = (charset == null ? StandardCharsets.UTF_8.newEncoder() : charset.newEncoder());
 
         try {
             encoder.onMalformedInput(CodingErrorAction.REPORT)

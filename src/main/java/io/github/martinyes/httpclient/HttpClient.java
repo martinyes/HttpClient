@@ -1,8 +1,6 @@
 package io.github.martinyes.httpclient;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.github.martinyes.httpclient.config.Config;
-import io.github.martinyes.httpclient.config.impl.DefaultConfig;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.BodyHandler;
 import io.github.martinyes.httpclient.data.response.HttpResponse;
@@ -14,6 +12,7 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -27,12 +26,13 @@ import java.util.concurrent.Executors;
  * The builder can be used to configure the request itself, like: host, port, config handler.
  * <p>
  * Requests can be sent in two ways: synchronously (blocking) or asynchronously (non-blocking).
- * <p>
- * {@link HttpClient#send(HttpRequest, BodyHandler)} blocks until the request has been sent and the response has been received.
- * {@link HttpClient#sendAsync(HttpRequest, BodyHandler)} sends the request and receives the response asynchronously.
- * It returns immediately with a {@link CompletableFuture<HttpResponse>}
+ * <ul>
+ *     <li>{@link HttpClient#send(HttpRequest, BodyHandler)} blocks until the request has been sent and the response has been received.</li>
+ *     <li>{@link HttpClient#sendAsync(HttpRequest, BodyHandler)} sends the request and receives the response asynchronously. It returns immediately with a {@link CompletableFuture}</li>
+ * </ul>
  *
  * @author martin
+ * @since 1
  */
 @Getter
 @Builder(builderMethodName = "newClient")
@@ -42,12 +42,13 @@ public class HttpClient {
      * Basic options
      */
     @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
-    @Builder.Default private final Config config = new DefaultConfig();
 
     /**
      * Remote server options
      */
     @Builder.Default private final int port = 80;
+    @Builder.Default private final Duration readTimeout = Duration.ofSeconds(10);
+    @Builder.Default private final Duration connectTimeout = Duration.ofSeconds(10);
     private final String host;
     private final boolean https;
 

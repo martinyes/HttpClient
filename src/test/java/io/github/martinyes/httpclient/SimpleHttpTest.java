@@ -2,7 +2,6 @@ package io.github.martinyes.httpclient;
 
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.HttpResponse;
-import io.github.martinyes.httpclient.data.response.body.StringBodyHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ public class SimpleHttpTest {
                 .path("/get")
                 .method(HttpMethod.GET)
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, new StringBodyHandler());
+        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
         res.whenComplete((r, ex) -> {
             System.out.println(r.body());
@@ -45,7 +44,7 @@ public class SimpleHttpTest {
                 .param("key1", "value3")
                 .param("key2", "value4")
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, new StringBodyHandler());
+        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
         res.whenComplete((r, ex) -> {
             System.out.println(r.body());

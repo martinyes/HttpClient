@@ -11,6 +11,7 @@ import java.util.Map;
  * Default implementation to parse responses using the {@link ResponseScheme} interface.
  *
  * @author martin
+ * @since 1
  */
 public class DefaultScheme implements ResponseScheme {
 

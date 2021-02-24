@@ -7,6 +7,7 @@ import lombok.Getter;
  * The version of the HTTP protocol.
  *
  * @author martin
+ * @since 1
  */
 @AllArgsConstructor
 @Getter

@@ -11,7 +11,8 @@ A lightweight and easy to use HTTP Client.
 * [x] Both Sync (blocking) and Async (non-blocking) API
   - Using CompletableFuture for the async API
 * [ ] Support for HTTP/2 Protocol
-* [x] Params and Headers Factory class
+* [x] Headers Factory class
+* [x] Numerous response body type
 * [ ] Manipulation of cookies
 * [ ] Support for HTTP authentication protocols
   - HTTP Basic

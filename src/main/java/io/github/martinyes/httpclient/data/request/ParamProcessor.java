@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * The ParamProcessor is used to create a query String with the given parameters.
  *
  * @author martin
+ * @since 1
  */
 @UtilityClass
 public class ParamProcessor {

@@ -6,7 +6,10 @@ import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 import java.util.Map;
 
 /**
+ * An interface that supports more ways to handle the response.
+ *
  * @author martin
+ * @since 1
  */
 public interface ResponseScheme {
 

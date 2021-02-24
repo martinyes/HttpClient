@@ -10,7 +10,6 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +20,7 @@ import java.nio.charset.StandardCharsets;
  * This class provides basic I/O operations to send headers and get responses through Sockets.
  *
  * @author martin
+ * @since 1
  */
 @Getter
 public class SocketClient implements ClientHandler {

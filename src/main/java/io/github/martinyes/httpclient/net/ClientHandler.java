@@ -9,10 +9,11 @@ import java.net.InetAddress;
 /**
  * This class provides the flexibility to create more connecting schemes, not only a Socket one.
  * <p>
- * {@link io.github.martinyes.httpclient.HttpClient} uses Socket as its default connecting scheme
+ * {@link HttpClient} uses Socket as its default connecting scheme
  * but you can specify a different one by implementing this interface.
  *
  * @author martin
+ * @since 1
  */
 public interface ClientHandler {
 
