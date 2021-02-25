@@ -39,3 +39,5 @@ A lightweight and easy to use HTTP Client.
 ## Installation
 
 ## Dependencies
+
+- Guava 30.1
