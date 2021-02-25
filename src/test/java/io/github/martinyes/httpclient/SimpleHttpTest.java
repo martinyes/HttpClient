@@ -40,9 +40,9 @@ public class SimpleHttpTest {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
-                .params("key1", "value1", "key1", "value2")
-                .param("key1", "value3")
-                .param("key2", "value4")
+                .param("key1", "value1")
+                .param("key1", "value2")
+                .params("key1", "value3", "key2", "value2")
                 .build();
         CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
@@ -55,6 +55,17 @@ public class SimpleHttpTest {
 
     @Test
     @DisplayName("JUnit Test to test adding additional headers to the request")
-    void jUnitTestToTestAddingAdditionalHeadersToTheRequest() {
+    void jUnitTestToTestAddingAdditionalHeadersToTheRequest() throws Exception {
+        HttpRequest request = HttpRequest.builder()
+                .path("/get")
+                .method(HttpMethod.GET)
+                .header("test", "value value")
+                .header("test", "value2")
+                .header("test2", "value1")
+                .headers("test2", "value3")
+                .build();
+        HttpResponse<String> res = POSTMAN_CLIENT.send(request, HttpResponse.BodyHandlers.asString());
+
+        System.out.println(res.body());
     }
 }

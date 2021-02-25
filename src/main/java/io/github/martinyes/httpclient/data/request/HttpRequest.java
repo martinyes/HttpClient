@@ -1,11 +1,7 @@
 package io.github.martinyes.httpclient.data.request;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.github.martinyes.httpclient.HttpClient;
-import io.github.martinyes.httpclient.HttpMethod;
-import io.github.martinyes.httpclient.HttpVersion;
+import io.github.martinyes.httpclient.*;
 import io.github.martinyes.httpclient.net.ClientHandler;
 import io.github.martinyes.httpclient.net.impl.SocketClient;
 import lombok.Builder;
@@ -47,7 +43,8 @@ public class HttpRequest {
     @Builder.Default private final boolean disableRedirects = false;
     @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
 
-    private final Multimap<String, String> params;
+    private final HttpHeaders headers;
+    private final HttpParams params;
 
     /**
      * HTTP Request Builder Class.
@@ -57,7 +54,8 @@ public class HttpRequest {
      */
     public static class HttpRequestBuilder {
         public HttpRequestBuilder() {
-            this.params = ArrayListMultimap.create();
+            this.headers = new HttpHeaders();
+            this.params = new HttpParams();
         }
 
         public HttpRequestBuilder disableRedirects() {
@@ -66,20 +64,22 @@ public class HttpRequest {
         }
 
         public HttpRequestBuilder headers(String... headers) {
+            this.headers.parse(headers);
             return this;
         }
 
         public HttpRequestBuilder header(String key, String value) {
+            this.headers.parse(new String[]{key, value});
             return this;
         }
 
         public HttpRequestBuilder params(String... params) {
-            this.params.putAll(ParamProcessor.parseParams(params));
+            this.params.parse(params);
             return this;
         }
 
         public HttpRequestBuilder param(String key, String value) {
-            this.params(key, value);
+            this.params.parse(new String[]{key, value});
             return this;
         }
     }

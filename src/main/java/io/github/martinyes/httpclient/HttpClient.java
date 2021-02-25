@@ -145,6 +145,7 @@ public class HttpClient {
      * HTTP Client Builder Class.
      *
      * @author martin
+     * @since 1
      */
     public static class HttpClientBuilder {
         public HttpClientBuilder https() {

@@ -2,7 +2,6 @@ package io.github.martinyes.httpclient.net.impl;
 
 import io.github.martinyes.httpclient.HttpClient;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.request.ParamProcessor;
 import io.github.martinyes.httpclient.net.ClientHandler;
 import lombok.Getter;
 
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
  * This class provides basic I/O operations to send headers and get responses through Sockets.
  *
  * @author martin
+ * @version 2
  * @since 1
  */
 @Getter
@@ -56,11 +56,12 @@ public class SocketClient implements ClientHandler {
 
     @Override
     public void send(HttpClient client, HttpRequest request) throws IOException {
-        String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n\r\n";
-        String queryParam = ParamProcessor.buildQueryURL(request);
+        String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n%s\r\n\r\n";
+        String queryParam = request.getParams().build(request);
 
         out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
-                request.getVersion().getHeaderName(), client.getHost() + ":" + getDefaultPort())
+                request.getVersion().getHeaderName(), client.getHost() + ":" + getDefaultPort(),
+                request.getHeaders().build(request).toString())
                 .getBytes(StandardCharsets.UTF_8));
         out.flush();
     }
