@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
  * This class provides basic I/O operations to send headers and get responses through Sockets.
  *
  * @author martin
- * @version 2
+ * @version 3
  * @since 1
  */
 @Getter
@@ -56,13 +56,7 @@ public class SocketClient implements ClientHandler {
 
     @Override
     public void send(HttpClient client, HttpRequest request) throws IOException {
-        String rawHeader = "%s %s\r\nConnection: close\r\nHost:%s\r\n%s\r\n\r\n";
-        String queryParam = request.getParams().build(request);
-
-        out.write(String.format(rawHeader, request.getMethod().name() + " " + request.getPath() + queryParam,
-                request.getVersion().getHeaderName(), client.getHost() + ":" + getDefaultPort(),
-                request.getHeaders().build(request).toString())
-                .getBytes(StandardCharsets.UTF_8));
+        out.write(getFormedData(client, request).getBytes(StandardCharsets.UTF_8));
         out.flush();
     }
 
@@ -76,6 +70,34 @@ public class SocketClient implements ClientHandler {
         }
 
         return builder.toString();
+    }
+
+    private String getFormedData(HttpClient client, HttpRequest request) {
+        StringBuilder data = new StringBuilder();
+        String crlf = "\r\n";
+
+        // startLine - METHOD TARGET VERSION
+        String startLine = "%s %s %s";
+        String queries = request.getParams().build(request);
+        data.append(String.format(startLine, request.getMethod().name(), request.getPath() + queries,
+                request.getVersion().getHeaderName())).append(crlf);
+
+        // headers
+        String host = "Host: %s";
+        String connection = "Connection: close";
+        data.append(connection).append(crlf);
+        data.append(String.format(host, client.getHost() + ":" + getDefaultPort())).append(crlf);
+
+        StringBuilder headers = request.getHeaders().build(request);
+        if (headers != null)
+            data.append(headers.toString());
+
+        // TODO: body
+
+        // end
+        data.append(crlf).append(crlf);
+
+        return data.toString();
     }
 
     private int getDefaultPort() {
