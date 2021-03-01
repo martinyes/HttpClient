@@ -5,6 +5,7 @@ import io.github.martinyes.httpclient.data.response.HttpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -19,24 +20,29 @@ public class SimpleHttpTest {
             .build();
 
     @Test
-    @DisplayName("Simple JUnit test to test a GET request")
-    void simpleJUnitTestToTestAGetRequest() throws Exception {
+    @DisplayName("An HTTP Request to test a simple GET request.")
+    void anHttpRequestToTestASimpleGetRequest() throws InterruptedException {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
-        res.whenComplete((r, ex) -> {
-            System.out.println(r.body());
-        });
+        CompletableFuture<HttpResponse<String>> res;
+        try {
+            res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
+            res.whenComplete((r, ex) -> {
+                System.out.println(r.body());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         LOCK.await(2000, TimeUnit.MILLISECONDS);
     }
 
     @Test
-    @DisplayName("JUnit Test to test query parameters in GET requests")
-    void junitTestToTestQueryParametersInGetRequests() throws Exception {
+    @DisplayName("An HTTP Request to test query parameters.")
+    void anHttpRequestToTestQueryParameters() throws InterruptedException {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
@@ -44,18 +50,23 @@ public class SimpleHttpTest {
                 .param("key1", "value2")
                 .params("key1", "value3", "key2", "value2")
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
-        res.whenComplete((r, ex) -> {
-            System.out.println(r.body());
-        });
+        CompletableFuture<HttpResponse<String>> res;
+        try {
+            res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
+            res.whenComplete((r, ex) -> {
+                System.out.println(r.body());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         LOCK.await(2000, TimeUnit.MILLISECONDS);
     }
 
     @Test
-    @DisplayName("JUnit Test to test adding additional headers to the request")
-    void jUnitTestToTestAddingAdditionalHeadersToTheRequest() throws Exception {
+    @DisplayName("An HTTP Request to test headers manipulation.")
+    void anHttpRequestToTestHeadersManipulation() {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
@@ -64,8 +75,13 @@ public class SimpleHttpTest {
                 .header("test2", "value1")
                 .headers("test2", "value3")
                 .build();
-        HttpResponse<String> res = POSTMAN_CLIENT.send(request, HttpResponse.BodyHandlers.asString());
 
-        System.out.println(res.body());
+        HttpResponse<String> res;
+        try {
+            res = POSTMAN_CLIENT.send(request, HttpResponse.BodyHandlers.asString());
+            System.out.println(res.body());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -85,8 +85,11 @@ public class SocketClient implements ClientHandler {
         // headers
         String host = "Host: %s";
         String connection = "Connection: close";
+        String userAgent = "User-Agent: %s";
         data.append(connection).append(crlf);
         data.append(String.format(host, client.getHost() + ":" + getDefaultPort())).append(crlf);
+        data.append(String.format(userAgent, (request.getUserAgent() == null ? client.getUserAgent() : request.getUserAgent())))
+                .append(crlf);
 
         StringBuilder headers = request.getHeaders().build(request);
         if (headers != null)

@@ -5,6 +5,7 @@ import io.github.martinyes.httpclient.data.response.HttpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -19,33 +20,40 @@ public class BodyTransformersTest {
             .build();
 
     @Test
-    @DisplayName("Test String as body type")
-    void testStringAsBodyType() throws Exception {
+    @DisplayName("An HTTP Request to test String body type.")
+    void anHttpRequestToTestStringBodyType() throws InterruptedException {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
                 .build();
-        CompletableFuture<HttpResponse<String>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
 
-        res.whenComplete((r, ex) -> {
-            System.out.println(r.body());
-        });
+        CompletableFuture<HttpResponse<String>> res;
+        try {
+            res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asString());
+
+            res.whenComplete((r, ex) -> System.out.println(r.body()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         LOCK.await(2000, TimeUnit.MILLISECONDS);
     }
 
     @Test
-    @DisplayName("Test byte array as body type")
-    void testByteArrayAsBodyType() throws Exception {
+    @DisplayName("An HTTP Request to test byte array body type.")
+    void anHttpRequestToTestByteArrayBodyType() throws InterruptedException {
         HttpRequest request = HttpRequest.builder()
                 .path("/get")
                 .method(HttpMethod.GET)
                 .build();
-        CompletableFuture<HttpResponse<byte[]>> res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asBytes());
 
-        res.whenComplete((r, ex) -> {
-            System.out.println(new String(r.body()));
-        });
+        CompletableFuture<HttpResponse<byte[]>> res;
+        try {
+            res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asBytes());
+            res.whenComplete((r, ex) -> System.out.println(new String(r.body())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         LOCK.await(2000, TimeUnit.MILLISECONDS);
     }

@@ -6,6 +6,7 @@ import io.github.martinyes.httpclient.net.ClientHandler;
 import io.github.martinyes.httpclient.net.impl.SocketClient;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,8 +33,9 @@ public class HttpRequest {
     /**
      * Execution options
      */
-    @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
     @Builder.Default private final ClientHandler handler = new SocketClient();
+    @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
+    @Setter private String userAgent;
 
     /**
      * Basic options

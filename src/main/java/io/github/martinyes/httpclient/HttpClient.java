@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
  *
  * @author martin
  * @since 1
+ * @version 2
  */
 @Getter
 @Builder(builderMethodName = "newClient")
@@ -41,7 +42,7 @@ public class HttpClient {
     /**
      * Basic options
      */
-    @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
+    @Builder.Default private final String userAgent = "HttpClient/0.2.4";
 
     /**
      * Remote server options
@@ -82,7 +83,7 @@ public class HttpClient {
         client.connect(InetAddress.getByName(host), port, https);
 
         CompletableFuture<HttpResponse<T>> future = new CompletableFuture<>();
-        ExecutorService service = (request.getExecutor() == null ? this.executor : request.getExecutor());
+        ExecutorService service = request.getExecutor();
 
         service.submit(() -> {
             try {
@@ -111,6 +112,9 @@ public class HttpClient {
         return new HttpResponse<T>() {
             @Override
             public HttpRequest request() {
+                if (request.getUserAgent() == null)
+                    request.setUserAgent(userAgent);
+
                 return request;
             }
 

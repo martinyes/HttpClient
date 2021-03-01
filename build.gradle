@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'cloud.lexium.httpclient'
-version '0.1.7-SNAPSHOT'
+version '0.2.4-SNAPSHOT'
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
