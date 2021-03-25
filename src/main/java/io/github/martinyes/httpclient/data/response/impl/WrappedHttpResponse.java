@@ -1,14 +1,14 @@
 package io.github.martinyes.httpclient.data.response.impl;
 
+import io.github.martinyes.httpclient.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Map;
 
 /**
  * A class responsible for wrapping HTTP responses.
  *
  * @author martin
+ * @version 2
  * @since 2
  */
 @AllArgsConstructor
@@ -16,7 +16,7 @@ import java.util.Map;
 public class WrappedHttpResponse {
 
     private final WrappedHttpStatus status;
-    private final Map<String, String> headers;
+    private final HttpHeaders headers;
     private final StringBuilder body;
 
     @AllArgsConstructor

@@ -8,5 +8,5 @@ package io.github.martinyes.httpclient;
  */
 public enum HttpMethod {
 
-    GET, POST
+    GET, POST, TRACE
 }

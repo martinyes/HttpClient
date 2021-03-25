@@ -1,5 +1,6 @@
 package io.github.martinyes.httpclient.data.response;
 
+import io.github.martinyes.httpclient.HttpHeaders;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.body.ByteArrayBodyHandler;
 import lombok.experimental.UtilityClass;
@@ -24,7 +25,7 @@ public interface HttpResponse<T> {
 
     String statusText();
 
-    Map<String, String> headers();
+    HttpHeaders headers();
 
     T body();
 

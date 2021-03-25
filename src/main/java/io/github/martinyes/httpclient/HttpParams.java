@@ -3,7 +3,7 @@ package io.github.martinyes.httpclient;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.net.UrlEscapers;
-import io.github.martinyes.httpclient.data.pair.Pair;
+import io.github.martinyes.httpclient.data.Pair;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.utils.GeneralUtils;
 import lombok.Getter;

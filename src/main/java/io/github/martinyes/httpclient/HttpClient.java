@@ -1,6 +1,5 @@
 package io.github.martinyes.httpclient;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.BodyHandler;
 import io.github.martinyes.httpclient.data.response.HttpResponse;
@@ -13,10 +12,8 @@ import lombok.Getter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * HTTP Client.
@@ -32,8 +29,8 @@ import java.util.concurrent.Executors;
  * </ul>
  *
  * @author martin
- * @since 1
  * @version 2
+ * @since 1
  */
 @Getter
 @Builder(builderMethodName = "newClient")
@@ -42,7 +39,7 @@ public class HttpClient {
     /**
      * Basic options
      */
-    @Builder.Default private final String userAgent = "HttpClient/0.2.4";
+    @Builder.Default private final String userAgent = "HttpClient/0.2.5";
 
     /**
      * Remote server options
@@ -134,7 +131,7 @@ public class HttpClient {
             }
 
             @Override
-            public Map<String, String> headers() {
+            public HttpHeaders headers() {
                 return wrapped.getHeaders();
             }
 

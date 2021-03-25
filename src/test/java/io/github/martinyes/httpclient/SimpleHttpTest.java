@@ -80,6 +80,7 @@ public class SimpleHttpTest {
         try {
             res = POSTMAN_CLIENT.send(request, HttpResponse.BodyHandlers.asString());
             System.out.println(res.body());
+            System.out.println(res.headers().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package io.github.martinyes.httpclient.data.pair;
+package io.github.martinyes.httpclient.data;
 
 import java.util.List;
 import java.util.stream.Collectors;
