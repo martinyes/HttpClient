@@ -1,8 +1,15 @@
 package io.github.martinyes.httpclient;
 
+import io.github.martinyes.httpclient.data.response.HttpResponse;
+
 import java.util.Map;
 
 /**
+ * A set of HTTP headers.
+ * <p>
+ * An <b>HttpHeaders</b> is not created directly, it is returned from an {@link HttpResponse}. Specific HTTP headers
+ * can be set for a request through one of the request builder's headers methods.
+ *
  * @author martin
  * @version 2
  * @since 2
@@ -19,11 +26,7 @@ public class HttpHeaders {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(" { ");
-        sb.append(map());
-        sb.append(" }");
-        return sb.toString();
+        return " { " + map() + " }";
     }
 
     private final Map<String, String> headers;

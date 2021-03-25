@@ -4,8 +4,6 @@ import io.github.martinyes.httpclient.HttpHeaders;
 import io.github.martinyes.httpclient.data.request.HttpRequest;
 import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
 
-import java.util.Map;
-
 /**
  * An interface that supports more ways to handle the response.
  *

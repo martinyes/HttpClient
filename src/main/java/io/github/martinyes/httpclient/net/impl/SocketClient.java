@@ -97,7 +97,7 @@ public class SocketClient implements ClientHandler {
 
         // TODO: body
 
-        // end
+        // endLine
         data.append(crlf).append(crlf);
 
         return data.toString();

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A class to parse HTTP headers when sending a request.
+ *
  * @author martin
  * @since 2
  */
@@ -33,7 +35,8 @@ public class HttpHeaderParser implements Pair<Multimap<String, String>> {
     public StringBuilder build(HttpRequest request) {
         StringBuilder builder = new StringBuilder();
 
-        if (request.getHeaders().getHeadersMap() == null || request.getHeaders().getHeadersMap().isEmpty())
+        if (request.getHeaders().getHeadersMap() == null
+                || request.getHeaders().getHeadersMap().isEmpty())
             return null;
 
         for (Map.Entry<String, Collection<String>> entry : request.getHeaders().getHeadersMap().asMap().entrySet()) {
