@@ -1,5 +1,7 @@
 A lightweight and easy to use HTTP Client.
 
+**_This project has created solely for learning._**
+
 ## Supported Protocols
 
 - HTTP/1.0
@@ -41,5 +43,3 @@ A lightweight and easy to use HTTP Client.
 ## Dependencies
 
 - Guava 30.1
-
-**_This project has created solely for learning._**
