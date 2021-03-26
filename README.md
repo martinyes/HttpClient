@@ -42,4 +42,4 @@ A lightweight and easy to use HTTP Client.
 
 - Guava 30.1
 
-
+**_This project has created solely for learning._**
