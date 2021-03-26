@@ -6,7 +6,6 @@ import io.github.martinyes.httpclient.data.response.body.ByteArrayBodyHandler;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.Charset;
-import java.util.Map;
 
 /**
  * A class represents a response of a {@link HttpRequest}.
