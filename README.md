@@ -43,3 +43,5 @@ A lightweight and easy to use HTTP Client.
 ## Dependencies
 
 - Guava 30.1
+- Lombok 1.18.16
+- Javalin 3.13.4
