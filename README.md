@@ -27,6 +27,7 @@ A lightweight and easy to use HTTP Client.
     - Authentication settings
     - Redirect policy
     - Custom Executor
+* [x] Integrated HTTP server for JUnit tests
 
 ## Core classes
 
