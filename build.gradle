@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'cloud.lexium.httpclient'
-version '0.1.7-SNAPSHOT'
+version '0.3.0-SNAPSHOT'
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
@@ -12,19 +12,13 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.16"
-    annotationProcessor "org.projectlombok:lombok:1.18.16"
+allprojects {
+    apply plugin: 'java'
 
-    implementation "com.squareup.moshi:moshi:1.11.0"
+    dependencies {
+        compileOnly "org.projectlombok:lombok:1.18.16"
+        annotationProcessor "org.projectlombok:lombok:1.18.16"
 
-    compile "org.jetbrains:annotations:16.0.2"
-    compile "com.google.guava:guava:30.1-jre"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.1"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.3.1"
-}
-
-test {
-    useJUnitPlatform()
+        compile "org.jetbrains:annotations:16.0.2"
+    }
 }
