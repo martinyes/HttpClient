@@ -1,7 +1,7 @@
-package io.github.martinyes.httpclient.data.response.body;
+package io.github.martinyes.httpclient.response.body.impl;
 
-import io.github.martinyes.httpclient.data.response.BodyHandler;
-import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
+import io.github.martinyes.httpclient.response.body.BodyType;
+import io.github.martinyes.httpclient.response.WrappedHttpResponse;
 
 import java.nio.CharBuffer;
 import java.nio.charset.*;
@@ -12,15 +12,13 @@ import java.nio.charset.*;
  * @author martin
  * @since 2
  */
-public final class ByteArrayBodyHandler implements BodyHandler<byte[]> {
+public final class ByteArrayBodyType implements BodyType<byte[]> {
 
     private Charset charset;
 
-    public ByteArrayBodyHandler() {
+    public ByteArrayBodyType() { }
 
-    }
-
-    public ByteArrayBodyHandler(Charset charset) {
+    public ByteArrayBodyType(Charset charset) {
         this.charset = charset;
     }
 

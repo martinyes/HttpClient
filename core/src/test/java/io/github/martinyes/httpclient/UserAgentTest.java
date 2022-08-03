@@ -1,7 +1,7 @@
 package io.github.martinyes.httpclient;
 
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.HttpResponse;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.response.HttpResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +15,13 @@ public class UserAgentTest {
 
     private final CountDownLatch LOCK = new CountDownLatch(1);
 
-    private static final HttpClient CUSTOM = HttpClient.newClient()
+    private static final HttpContainer CUSTOM = HttpContainer.newContainer()
             .userAgent("CUSTOM/1.0")
             .host("postman-echo.com")
             .https()
             .build();
 
-    private static final HttpClient NON_CUSTOM = HttpClient.newClient()
+    private static final HttpContainer NON_CUSTOM = HttpContainer.newContainer()
             .host("postman-echo.com")
             .https()
             .build();

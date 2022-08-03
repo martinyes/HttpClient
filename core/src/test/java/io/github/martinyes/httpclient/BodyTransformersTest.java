@@ -1,20 +1,24 @@
 package io.github.martinyes.httpclient;
 
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.HttpResponse;
+import com.google.gson.JsonObject;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.response.HttpResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BodyTransformersTest {
 
     private final CountDownLatch LOCK = new CountDownLatch(1);
 
-    private static final HttpClient POSTMAN_CLIENT = HttpClient.newClient()
+    private static final HttpContainer POSTMAN_CLIENT = HttpContainer.newContainer()
             .host("postman-echo.com")
             .https()
             .build();
@@ -50,7 +54,26 @@ public class BodyTransformersTest {
         CompletableFuture<HttpResponse<byte[]>> res;
         try {
             res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asBytes());
-            res.whenComplete((r, ex) -> System.out.println(new String(r.body())));
+            res.whenComplete((r, ex) -> System.out.println(Arrays.toString(r.body())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        LOCK.await(2000, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    @DisplayName("An HTTP Request to test json body type.")
+    void anHttpRequestToTestJsonBodyType() throws InterruptedException {
+        HttpRequest request = HttpRequest.builder()
+                .path("/get")
+                .method(HttpMethod.GET)
+                .build();
+
+        CompletableFuture<HttpResponse<JsonObject>> res;
+        try {
+            res = POSTMAN_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.asJson());
+            res.whenComplete((r, ex) -> System.out.println(r.body().get("url")));
         } catch (IOException e) {
             e.printStackTrace();
         }

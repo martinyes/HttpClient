@@ -1,9 +1,8 @@
-package io.github.martinyes.httpclient.data;
+package io.github.martinyes.httpclient.utils;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.utils.GeneralUtils;
+import io.github.martinyes.httpclient.request.HttpRequest;
 import lombok.Getter;
 
 import java.util.Arrays;

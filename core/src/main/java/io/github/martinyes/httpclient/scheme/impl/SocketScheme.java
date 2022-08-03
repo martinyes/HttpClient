@@ -1,8 +1,8 @@
-package io.github.martinyes.httpclient.net.impl;
+package io.github.martinyes.httpclient.scheme.impl;
 
-import io.github.martinyes.httpclient.HttpClient;
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.net.ClientHandler;
+import io.github.martinyes.httpclient.HttpContainer;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.scheme.Scheme;
 import lombok.Getter;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -14,7 +14,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 /**
- * An implementation to {@link ClientHandler} using Java Sockets.
+ * An implementation to {@link Scheme} using Java Sockets.
  * <p>
  * This class provides basic I/O operations to send headers and get responses through Sockets.
  *
@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
  * @since 1
  */
 @Getter
-public class SocketClient implements ClientHandler {
+public class SocketScheme implements Scheme {
 
     public boolean https;
 
@@ -55,7 +55,7 @@ public class SocketClient implements ClientHandler {
     }
 
     @Override
-    public void send(HttpClient client, HttpRequest request) throws IOException {
+    public void send(HttpContainer client, HttpRequest request) throws IOException {
         out.write(getFormedData(client, request).getBytes(StandardCharsets.UTF_8));
         out.flush();
     }
@@ -72,9 +72,9 @@ public class SocketClient implements ClientHandler {
         return builder.toString();
     }
 
-    private String getFormedData(HttpClient client, HttpRequest request) {
-        StringBuilder data = new StringBuilder();
-        String crlf = "\r\n";
+    private String getFormedData(HttpContainer client, HttpRequest request) {
+        final StringBuilder data = new StringBuilder();
+        final String crlf = "\r\n";
 
         // startLine - METHOD TARGET VERSION
         String startLine = "%s %s %s";
@@ -93,7 +93,7 @@ public class SocketClient implements ClientHandler {
 
         StringBuilder headers = request.getHeaders().build(request);
         if (headers != null)
-            data.append(headers.toString());
+            data.append(headers);
 
         // TODO: body
 

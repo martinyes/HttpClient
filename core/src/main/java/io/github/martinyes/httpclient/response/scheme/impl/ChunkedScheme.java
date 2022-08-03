@@ -1,9 +1,9 @@
-package io.github.martinyes.httpclient.data.response.scheme.impl;
+package io.github.martinyes.httpclient.response.scheme.impl;
 
 import io.github.martinyes.httpclient.HttpHeaders;
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
-import io.github.martinyes.httpclient.data.response.scheme.ResponseScheme;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.response.WrappedHttpResponse;
+import io.github.martinyes.httpclient.response.scheme.ResponseScheme;
 
 /**
  * Chunked implementation to parse responses sent in chunks using the {@link ResponseScheme} interface.

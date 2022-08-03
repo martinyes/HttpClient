@@ -1,11 +1,11 @@
 package io.github.martinyes.httpclient;
 
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.BodyHandler;
-import io.github.martinyes.httpclient.data.response.HttpResponse;
-import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
-import io.github.martinyes.httpclient.data.response.scheme.impl.DefaultScheme;
-import io.github.martinyes.httpclient.net.ClientHandler;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.response.body.BodyType;
+import io.github.martinyes.httpclient.response.HttpResponse;
+import io.github.martinyes.httpclient.response.WrappedHttpResponse;
+import io.github.martinyes.httpclient.response.scheme.impl.DefaultScheme;
+import io.github.martinyes.httpclient.scheme.Scheme;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,16 +16,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 /**
- * HTTP Client.
+ * HTTP Container.
  * <p>
  * This class acts like a container. Used to send one or multiple requests and parse their responses.
- * An HTTP client is created manually through a client builder.
+ * An HTTP Container is created manually through a client builder.
  * The builder can be used to configure the request itself, like: host, port, config handler.
  * <p>
  * Requests can be sent in two ways: synchronously (blocking) or asynchronously (non-blocking).
  * <ul>
- *     <li>{@link HttpClient#send(HttpRequest, BodyHandler)} blocks until the request has been sent and the response has been received.</li>
- *     <li>{@link HttpClient#sendAsync(HttpRequest, BodyHandler)} sends the request and receives the response asynchronously. It returns immediately with a {@link CompletableFuture}</li>
+ *     <li>{@link HttpContainer#send(HttpRequest, BodyType)} blocks until the request has been sent and the response has been received.</li>
+ *     <li>{@link HttpContainer#sendAsync(HttpRequest, BodyType)} sends the request and receives the response asynchronously. It returns immediately with a {@link CompletableFuture}</li>
  * </ul>
  *
  * @author martin
@@ -33,13 +33,13 @@ import java.util.concurrent.ExecutorService;
  * @since 1
  */
 @Getter
-@Builder(builderMethodName = "newClient")
-public class HttpClient {
+@Builder(builderMethodName = "newContainer")
+public class HttpContainer {
 
     /**
      * Basic options
      */
-    @Builder.Default private final String userAgent = "HttpClient/0.2.5";
+    @Builder.Default private final String userAgent = "HttpClient/0.3.0";
 
     /**
      * Remote server options
@@ -58,8 +58,8 @@ public class HttpClient {
      * @return an HTTP Response
      * @throws IOException if an I/O error occurs when sending or receiving
      */
-    public <T> HttpResponse<T> send(HttpRequest request, BodyHandler<T> bodyHandler) throws IOException {
-        ClientHandler client = request.getHandler();
+    public <T> HttpResponse<T> send(HttpRequest request, BodyType<T> bodyHandler) throws IOException {
+        Scheme client = request.getHandler();
 
         client.connect(InetAddress.getByName(host), port, https);
         client.send(this, request);
@@ -75,8 +75,8 @@ public class HttpClient {
      * @return a CompletableFuture<HttpResponse>
      * @throws IOException if an I/O error occurs when sending or receiving
      */
-    public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyHandler<T> bodyHandler) throws IOException {
-        ClientHandler client = request.getHandler();
+    public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyType<T> bodyHandler) throws IOException {
+        Scheme client = request.getHandler();
         client.connect(InetAddress.getByName(host), port, https);
 
         CompletableFuture<HttpResponse<T>> future = new CompletableFuture<>();
@@ -99,12 +99,16 @@ public class HttpClient {
         return future;
     }
 
-    private <T> HttpResponse<T> parseResponse(String data, HttpRequest request, BodyHandler<T> bodyHandler) {
+    private <T> HttpResponse<T> parseResponse(String data, HttpRequest request, BodyType<T> bodyHandler) {
         if (request.getVersion() == HttpVersion.HTTP_2) {
-            throw new RuntimeException("HTTP/2 protocol is not supported yet.");
+            throw new UnsupportedOperationException("HTTP/2 protocol is not supported yet.");
         }
 
         WrappedHttpResponse wrapped = new DefaultScheme().parseResponse(request, data);
+
+        // Redirect
+        if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && !request.isDisableRedirects()) {
+        }
 
         return new HttpResponse<T>() {
             @Override
@@ -148,8 +152,8 @@ public class HttpClient {
      * @author martin
      * @since 1
      */
-    public static class HttpClientBuilder {
-        public HttpClientBuilder https() {
+    public static class HttpContainerBuilder {
+        public HttpContainerBuilder https() {
             this.https = true;
             return this;
         }

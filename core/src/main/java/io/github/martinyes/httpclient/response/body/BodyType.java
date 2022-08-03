@@ -1,19 +1,19 @@
-package io.github.martinyes.httpclient.data.response;
+package io.github.martinyes.httpclient.response.body;
 
-import io.github.martinyes.httpclient.HttpClient;
-import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
+import io.github.martinyes.httpclient.HttpContainer;
+import io.github.martinyes.httpclient.response.WrappedHttpResponse;
 
 /**
  * A handler for response bodies. This class provides ability to implement many common body types.
  * <p>
  * A BodyHandler takes a {@link WrappedHttpResponse} which contains everything about a response.
- * It is invoked once we are parsing the response in {@link HttpClient}.
+ * It is invoked once we are parsing the response in {@link HttpContainer}.
  * <p>
  * There are various <b>predefined</b> body types like:
  * <ul>
  *  <li><b>String Body</b></li>
  *  <li><b>Bytes Body</b></li>
- *  <li><b>File Body</b></li>
+ *  <li><b>Json Body</b></li>
  * </ul>
  *
  * <pre>
@@ -30,7 +30,7 @@ import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
  * @since 2
  */
 @FunctionalInterface
-public interface BodyHandler<T> {
+public interface BodyType<T> {
 
     T apply(WrappedHttpResponse p0);
 }

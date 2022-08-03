@@ -1,6 +1,6 @@
 package io.github.martinyes.httpclient;
 
-import io.github.martinyes.httpclient.data.response.HttpResponse;
+import io.github.martinyes.httpclient.response.HttpResponse;
 
 import java.util.Map;
 

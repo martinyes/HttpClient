@@ -1,8 +1,8 @@
-package io.github.martinyes.httpclient.data.response.scheme;
+package io.github.martinyes.httpclient.response.scheme;
 
 import io.github.martinyes.httpclient.HttpHeaders;
-import io.github.martinyes.httpclient.data.request.HttpRequest;
-import io.github.martinyes.httpclient.data.response.impl.WrappedHttpResponse;
+import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.response.WrappedHttpResponse;
 
 /**
  * An interface that supports more ways to handle the response.

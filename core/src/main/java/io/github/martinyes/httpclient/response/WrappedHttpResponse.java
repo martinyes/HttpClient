@@ -1,4 +1,4 @@
-package io.github.martinyes.httpclient.data.response.impl;
+package io.github.martinyes.httpclient.response;
 
 import io.github.martinyes.httpclient.HttpHeaders;
 import lombok.AllArgsConstructor;
