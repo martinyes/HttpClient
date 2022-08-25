@@ -2,6 +2,7 @@ package io.github.martinyes.httpclient.response.body.impl;
 
 import io.github.martinyes.httpclient.response.body.BodyType;
 import io.github.martinyes.httpclient.response.WrappedHttpResponse;
+import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
 
 import java.nio.CharBuffer;
 import java.nio.charset.*;
@@ -11,6 +12,7 @@ import java.nio.charset.*;
  *
  * @author martin
  * @since 2
+ * @version 2
  */
 public final class ByteArrayBodyType implements BodyType<byte[]> {
 
@@ -23,7 +25,7 @@ public final class ByteArrayBodyType implements BodyType<byte[]> {
     }
 
     @Override
-    public byte[] apply(WrappedHttpResponse res) {
+    public byte[] apply(RawResponse res) {
         CharsetEncoder encoder = (charset == null ? StandardCharsets.UTF_8.newEncoder() : charset.newEncoder());
 
         try {
@@ -31,7 +33,7 @@ public final class ByteArrayBodyType implements BodyType<byte[]> {
                     .onUnmappableCharacter(CodingErrorAction.REPLACE)
                     .replaceWith(new byte[]{0});
 
-            return encoder.encode(CharBuffer.wrap(res.getBody().toString())).array();
+            return encoder.encode(CharBuffer.wrap(res.message().toString())).array();
         } catch (CharacterCodingException e) {
             e.printStackTrace();
             return new byte[0];

@@ -43,6 +43,28 @@ public class HttpServer {
         addPage(new Page() {
             @Override
             public Handler handle() {
+                return ctx -> ctx.redirect("/redirectLoop2");
+            }
+
+            @Override
+            public String path() {
+                return "/redirectLoop";
+            }
+        });
+        addPage(new Page() {
+            @Override
+            public Handler handle() {
+                return ctx -> ctx.redirect("/redirectLoop");
+            }
+
+            @Override
+            public String path() {
+                return "/redirectLoop2";
+            }
+        });
+        addPage(new Page() {
+            @Override
+            public Handler handle() {
                 return ctx -> ctx.redirect("/get?redirect=true");
             }
 

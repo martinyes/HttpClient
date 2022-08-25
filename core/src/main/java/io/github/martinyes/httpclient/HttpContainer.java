@@ -1,16 +1,19 @@
 package io.github.martinyes.httpclient;
 
+import io.github.martinyes.httpclient.exception.RedirectLoopException;
 import io.github.martinyes.httpclient.request.HttpRequest;
-import io.github.martinyes.httpclient.response.body.BodyType;
 import io.github.martinyes.httpclient.response.HttpResponse;
 import io.github.martinyes.httpclient.response.WrappedHttpResponse;
-import io.github.martinyes.httpclient.response.scheme.impl.DefaultScheme;
+import io.github.martinyes.httpclient.response.body.BodyType;
+import io.github.martinyes.httpclient.response.parser.impl.DefaultParser;
 import io.github.martinyes.httpclient.scheme.Scheme;
+import io.github.martinyes.httpclient.scheme.data.ConnectionData;
+import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
+import io.github.martinyes.httpclient.scheme.data.response.impl.DefaultResponse;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +32,7 @@ import java.util.concurrent.ExecutorService;
  * </ul>
  *
  * @author martin
- * @version 2
+ * @version 3
  * @since 1
  */
 @Getter
@@ -44,27 +47,26 @@ public class HttpContainer {
     /**
      * Remote server options
      */
-    @Builder.Default private final int port = 80;
     @Builder.Default private final Duration readTimeout = Duration.ofSeconds(10);
     @Builder.Default private final Duration connectTimeout = Duration.ofSeconds(10);
-    private final String host;
-    private final boolean https;
 
     /**
      * This method used to send the given request synchronously.
-     * It blocks the thread until the request has been send and a response has been received.
+     * It blocks the thread until the request has been sent and a response has been received.
      *
      * @param request the configured request
      * @return an HTTP Response
-     * @throws IOException if an I/O error occurs when sending or receiving
+     * @throws IOException           if an I/O error occurs when sending or receiving
+     * @throws RedirectLoopException if there is a redirect loop
      */
-    public <T> HttpResponse<T> send(HttpRequest request, BodyType<T> bodyHandler) throws IOException {
-        Scheme client = request.getHandler();
+    public <T> HttpResponse<T> send(HttpRequest request, BodyType<T> bodyHandler) throws IOException, RedirectLoopException {
+        Scheme scheme = request.getScheme();
 
-        client.connect(InetAddress.getByName(host), port, https);
-        client.send(this, request);
+        scheme.connect(new ConnectionData(request.getUri(), this, request));
+        HttpResponse<T> response = parseResponse(scheme.send(this, request), request, bodyHandler);
+        scheme.disconnect();
 
-        return parseResponse(client.read(), request, bodyHandler);
+        return response;
     }
 
     /**
@@ -76,20 +78,19 @@ public class HttpContainer {
      * @throws IOException if an I/O error occurs when sending or receiving
      */
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyType<T> bodyHandler) throws IOException {
-        Scheme client = request.getHandler();
-        client.connect(InetAddress.getByName(host), port, https);
+        Scheme scheme = request.getScheme();
+        scheme.connect(new ConnectionData(request.getUri(), this, request));
 
         CompletableFuture<HttpResponse<T>> future = new CompletableFuture<>();
         ExecutorService service = request.getExecutor();
 
         service.submit(() -> {
             try {
-                client.send(this, request);
-
-                HttpResponse<T> res = parseResponse(client.read(), request, bodyHandler);
+                HttpResponse<T> res = parseResponse(scheme.send(this, request), request, bodyHandler);
                 future.complete(res);
-                client.disconnect();
+                scheme.disconnect();
             } catch (Throwable t) {
+                t.printStackTrace();
                 future.completeExceptionally(t);
             }
         });
@@ -99,22 +100,66 @@ public class HttpContainer {
         return future;
     }
 
-    private <T> HttpResponse<T> parseResponse(String data, HttpRequest request, BodyType<T> bodyHandler) {
-        if (request.getVersion() == HttpVersion.HTTP_2) {
-            throw new UnsupportedOperationException("HTTP/2 protocol is not supported yet.");
+    private <T> HttpResponse<T> parseResponse(RawResponse response, HttpRequest request, BodyType<T> bodyType) throws IOException, RedirectLoopException {
+        // Check if the raw response is a default response so that we should not parse the response as it is not needed
+        if (response instanceof DefaultResponse) {
+            DefaultResponse temp = (DefaultResponse) response;
+            return new HttpResponse<>() {
+                @Override
+                public HttpRequest request() {
+                    if (request.getUserAgent() == null) request.setUserAgent(userAgent);
+
+                    return request;
+                }
+
+                @Override
+                public int statusCode() {
+                    return temp.statusCode();
+                }
+
+                @Override
+                public String protocol() {
+                    // TODO: implement protocol
+                    return request.getVersion().getHeaderName();
+                }
+
+                @Override
+                public String statusText() {
+                    return temp.statusText();
+                }
+
+                @Override
+                public HttpHeaders headers() {
+                    return temp.headers();
+                }
+
+                @Override
+                public T body() {
+                    return bodyType.apply(temp);
+                }
+            };
         }
 
-        WrappedHttpResponse wrapped = new DefaultScheme().parseResponse(request, data);
+        WrappedHttpResponse wrapped = new DefaultParser().parseResponse(request, response.message());
 
-        // Redirect
-        if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && !request.isDisableRedirects()) {
+        // Redirect https://www.rfc-editor.org/rfc/rfc7231.html#section-6.4
+        if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && request.isFollowRedirects()) {
+            if (!HttpRequest.REDIRECTS_RULE.test(request.getRedirectsCompleted()))
+                throw new RedirectLoopException(String.format("The http request exceeded the maximum number of redirects - %s", request.getRedirectsCompleted()));
+
+            request.setRedirectsCompleted(request.getRedirectsCompleted() + 1);
+
+            // TODO: fix this
+            //String newPath = wrapped.getHeaders().get("location");
+            //request.setPath(newPath);
+
+            return this.send(request, bodyType);
         }
 
-        return new HttpResponse<T>() {
+        return new HttpResponse<>() {
             @Override
             public HttpRequest request() {
-                if (request.getUserAgent() == null)
-                    request.setUserAgent(userAgent);
+                if (request.getUserAgent() == null) request.setUserAgent(userAgent);
 
                 return request;
             }
@@ -141,21 +186,8 @@ public class HttpContainer {
 
             @Override
             public T body() {
-                return bodyHandler.apply(wrapped);
+                return bodyType.apply(response);
             }
         };
-    }
-
-    /**
-     * HTTP Client Builder Class.
-     *
-     * @author martin
-     * @since 1
-     */
-    public static class HttpContainerBuilder {
-        public HttpContainerBuilder https() {
-            this.https = true;
-            return this;
-        }
     }
 }

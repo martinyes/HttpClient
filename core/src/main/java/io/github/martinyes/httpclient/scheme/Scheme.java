@@ -2,9 +2,11 @@ package io.github.martinyes.httpclient.scheme;
 
 import io.github.martinyes.httpclient.HttpContainer;
 import io.github.martinyes.httpclient.request.HttpRequest;
+import io.github.martinyes.httpclient.scheme.data.ConnectionData;
+import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.InputStream;
 
 /**
  * This class provides the flexibility to create more connecting schemes, not only a Socket one.
@@ -14,14 +16,23 @@ import java.net.InetAddress;
  *
  * @author martin
  * @since 1
+ * @version 2
  */
 public interface Scheme {
 
-    void connect(InetAddress p0, int p1, boolean p2) throws IOException;
+    void connect(ConnectionData p0) throws IOException;
 
-    void disconnect() throws IOException;
+    boolean disconnect();
 
-    void send(HttpContainer p0, HttpRequest p1) throws IOException;
+    RawResponse send(HttpContainer p0, HttpRequest p1) throws IOException;
 
-    String read() throws IOException;
+    default String read(InputStream in) throws IOException {
+        final StringBuilder builder = new StringBuilder();
+        final byte[] buffer = new byte[4096];
+        int read;
+        while ((read = in.read(buffer)) > 0)
+            builder.append(new String(buffer, 0, read));
+
+        return builder.toString();
+    }
 }

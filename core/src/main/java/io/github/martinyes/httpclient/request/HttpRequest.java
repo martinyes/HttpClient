@@ -5,15 +5,17 @@ import io.github.martinyes.httpclient.HttpContainer;
 import io.github.martinyes.httpclient.HttpMethod;
 import io.github.martinyes.httpclient.HttpParams;
 import io.github.martinyes.httpclient.HttpVersion;
-import io.github.martinyes.httpclient.utils.HttpHeaderParser;
 import io.github.martinyes.httpclient.scheme.Scheme;
-import io.github.martinyes.httpclient.scheme.impl.SocketScheme;
+import io.github.martinyes.httpclient.scheme.impl.DefaultScheme;
+import io.github.martinyes.httpclient.utils.HttpHeaderParser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 
 /**
  * This class represents an HTTP Request with the support for changing its values like:
@@ -25,7 +27,7 @@ import java.util.concurrent.Executors;
  * </ul>
  * <p>
  * These requests sent through an {@link HttpContainer}, that can be created manually
- * through a HTTP Client Builder.
+ * through an HTTP Client Builder.
  *
  * @author martin
  * @since 1
@@ -37,20 +39,27 @@ public class HttpRequest {
     /**
      * Execution options
      */
-    @Builder.Default private final Scheme handler = new SocketScheme();
+    @Builder.Default private final Scheme scheme = new DefaultScheme();
     @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
     @Setter private String userAgent;
 
     /**
      * Basic options
      */
-    @Builder.Default private final String path = "/";
+    private final URI uri;
     private final HttpMethod method;
-    @Builder.Default private final boolean disableRedirects = false;
     @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
 
     private final HttpHeaderParser headers;
     private final HttpParams params;
+    private final boolean followRedirects;
+
+    /**
+     * Non-adjustable options
+     */
+    @Setter private int redirectsCompleted;
+    @Getter public static final Predicate<Integer> REDIRECTS_RULE = i -> (i < 5);
+
 
     /**
      * HTTP Request Builder Class.
@@ -62,10 +71,11 @@ public class HttpRequest {
         public HttpRequestBuilder() {
             this.headers = new HttpHeaderParser();
             this.params = new HttpParams();
+            this.followRedirects = false;
         }
 
-        public HttpRequestBuilder disableRedirects() {
-            this.disableRedirects$set = true;
+        public HttpRequestBuilder followRedirects() {
+            this.followRedirects = true;
             return this;
         }
 

@@ -1,16 +1,5 @@
 A lightweight and easy to use HTTP Client.
 
-## Supported Protocols
-
-- Socket scheme:
-  - HTTP/1.0
-  - ~~HTTP/1.1~~
-  - ~~HTTP/2~~
-- Http(s)URLConnection scheme:
-  - HTTP/1.0
-  - HTTP/1.1
-  - HTTP/2
-
 ## Features
 
 * [x] Well-documented
@@ -18,7 +7,7 @@ A lightweight and easy to use HTTP Client.
     - Socket
     - Http(s)URLConnection
 * [x] Both Sync (blocking) and Async (non-blocking) API
-* [ ] Support for HTTP/2 Protocol
+* [ ] Support for HTTP/2 Protocol when using Socket scheme
 * [x] Headers Factory class
 * [ ] Body manipulation on sending requests
 * [x] Numerous response body types

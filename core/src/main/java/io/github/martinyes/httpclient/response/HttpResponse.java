@@ -6,6 +6,7 @@ import io.github.martinyes.httpclient.HttpHeaders;
 import io.github.martinyes.httpclient.request.HttpRequest;
 import io.github.martinyes.httpclient.response.body.BodyType;
 import io.github.martinyes.httpclient.response.body.impl.ByteArrayBodyType;
+import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
 
 import java.nio.charset.Charset;
 
@@ -15,6 +16,7 @@ import java.nio.charset.Charset;
  * @param <T> response body type
  * @author martin
  * @since 1
+ * @version 2
  */
 public interface HttpResponse<T> {
 
@@ -39,7 +41,7 @@ public interface HttpResponse<T> {
     class BodyHandlers {
 
         public static BodyType<String> asString() {
-            return res -> res.getBody().toString();
+            return RawResponse::message;
         }
 
         public static BodyType<byte[]> asBytes() {
@@ -51,7 +53,7 @@ public interface HttpResponse<T> {
         }
 
         public static BodyType<JsonObject> asJson() {
-            return res -> JsonParser.parseString(res.getBody().toString()).getAsJsonObject();
+            return res -> JsonParser.parseString(res.message()).getAsJsonObject();
         }
     }
 }

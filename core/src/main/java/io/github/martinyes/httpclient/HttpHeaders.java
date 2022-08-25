@@ -2,6 +2,7 @@ package io.github.martinyes.httpclient;
 
 import io.github.martinyes.httpclient.response.HttpResponse;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,27 +17,35 @@ import java.util.Map;
  */
 public class HttpHeaders {
 
-    public static HttpHeaders of(Map<String, String> map) {
+    private final Map<String, List<String>> headers;
+
+    public static HttpHeaders of(Map<String, List<String>> map) {
         return parse(map);
     }
 
-    public Map<String, String> map() {
+    public List<String> get(String key) {
+        return this.headers.get(key);
+    }
+
+    public void print() {
+        this.headers.forEach((k, v) -> System.out.println(k + ":" + v));
+    }
+
+    public Map<String, List<String>> map() {
         return headers;
+    }
+
+    private HttpHeaders(Map<String, List<String>> map) {
+        this.headers = map;
+    }
+
+    private static HttpHeaders parse(Map<String, List<String>> headers) {
+        // TODO: filtering and authenticating
+        return new HttpHeaders(headers);
     }
 
     @Override
     public String toString() {
         return " { " + map() + " }";
-    }
-
-    private final Map<String, String> headers;
-
-    private HttpHeaders(Map<String, String> map) {
-        this.headers = map;
-    }
-
-    private static HttpHeaders parse(Map<String, String> headers) {
-        // TODO: filtering and authenticating
-        return new HttpHeaders(headers);
     }
 }

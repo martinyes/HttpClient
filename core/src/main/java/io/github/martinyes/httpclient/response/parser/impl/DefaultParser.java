@@ -1,25 +1,24 @@
-package io.github.martinyes.httpclient.response.scheme.impl;
+package io.github.martinyes.httpclient.response.parser.impl;
 
 import io.github.martinyes.httpclient.HttpHeaders;
 import io.github.martinyes.httpclient.request.HttpRequest;
 import io.github.martinyes.httpclient.response.WrappedHttpResponse;
-import io.github.martinyes.httpclient.response.scheme.ResponseScheme;
+import io.github.martinyes.httpclient.response.parser.ResponseParser;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Default implementation to parse responses using the {@link ResponseScheme} interface.
+ * Default implementation to parse responses using the {@link ResponseParser} interface.
  *
  * @author martin
  * @version 2
  * @since 1
  */
-public class DefaultScheme implements ResponseScheme {
+public class DefaultParser implements ResponseParser {
 
     @Override
     public HttpHeaders parseHeaders(String data) {
-        Map<String, String> headers = new HashMap<>();
+        Map<String, List<String>> headers = new HashMap<>();
 
         String[] messages = data.split("\r\n");
 
@@ -31,7 +30,8 @@ public class DefaultScheme implements ResponseScheme {
 
             String[] headerPair = message.split(": ", 2);
             if (headerPair.length == 2)
-                headers.put(headerPair[0].toLowerCase(), headerPair[1]);
+                // TODO: fix headers multimap
+                headers.put(headerPair[0].toLowerCase(), Collections.singletonList(headerPair[1]));
         }
 
         return HttpHeaders.of(headers);
@@ -45,7 +45,7 @@ public class DefaultScheme implements ResponseScheme {
         // If so, we simply change the parsing algorithm to the chunked one.
         if (headers.map().containsKey("Transfer-Encoding") &&
                 headers.map().get("Transfer-Encoding").equals("chunked"))
-            return new ChunkedScheme().parseResponse(request, data);
+            return new ChunkedParser().parseResponse(request, data);
 
         String[] messages = data.split("\r\n");
 

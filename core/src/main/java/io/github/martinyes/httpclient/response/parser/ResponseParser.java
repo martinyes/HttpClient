@@ -1,4 +1,4 @@
-package io.github.martinyes.httpclient.response.scheme;
+package io.github.martinyes.httpclient.response.parser;
 
 import io.github.martinyes.httpclient.HttpHeaders;
 import io.github.martinyes.httpclient.request.HttpRequest;
@@ -10,7 +10,7 @@ import io.github.martinyes.httpclient.response.WrappedHttpResponse;
  * @author martin
  * @since 1
  */
-public interface ResponseScheme {
+public interface ResponseParser {
 
     HttpHeaders parseHeaders(String p0);
 

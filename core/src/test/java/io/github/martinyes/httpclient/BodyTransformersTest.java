@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -19,15 +21,13 @@ public class BodyTransformersTest {
     private final CountDownLatch LOCK = new CountDownLatch(1);
 
     private static final HttpContainer POSTMAN_CLIENT = HttpContainer.newContainer()
-            .host("postman-echo.com")
-            .https()
             .build();
 
     @Test
     @DisplayName("An HTTP Request to test String body type.")
-    void anHttpRequestToTestStringBodyType() throws InterruptedException {
+    void anHttpRequestToTestStringBodyType() throws InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.builder()
-                .path("/get")
+                .uri(new URI("https://postman-echo.com/get"))
                 .method(HttpMethod.GET)
                 .build();
 
@@ -45,9 +45,9 @@ public class BodyTransformersTest {
 
     @Test
     @DisplayName("An HTTP Request to test byte array body type.")
-    void anHttpRequestToTestByteArrayBodyType() throws InterruptedException {
+    void anHttpRequestToTestByteArrayBodyType() throws InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.builder()
-                .path("/get")
+                .uri(new URI("https://postman-echo.com/get"))
                 .method(HttpMethod.GET)
                 .build();
 
@@ -64,9 +64,9 @@ public class BodyTransformersTest {
 
     @Test
     @DisplayName("An HTTP Request to test json body type.")
-    void anHttpRequestToTestJsonBodyType() throws InterruptedException {
+    void anHttpRequestToTestJsonBodyType() throws InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.builder()
-                .path("/get")
+                .uri(new URI("https://postman-echo.com/get"))
                 .method(HttpMethod.GET)
                 .build();
 
