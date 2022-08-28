@@ -1,6 +1,9 @@
 package io.github.martinyes.httpclient;
 
+import com.google.common.collect.Maps;
 import io.github.martinyes.httpclient.response.HttpResponse;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
@@ -12,34 +15,47 @@ import java.util.Map;
  * can be set for a request through one of the request builder's headers methods.
  *
  * @author martin
- * @version 2
+ * @version 3
  * @since 2
  */
 public class HttpHeaders {
 
-    private final Map<String, List<String>> headers;
+    private final Map<String, HeaderValue> headers;
 
-    public static HttpHeaders of(Map<String, List<String>> map) {
-        return parse(map);
-    }
-
-    public List<String> get(String key) {
-        return this.headers.get(key);
-    }
-
-    public void print() {
-        this.headers.forEach((k, v) -> System.out.println(k + ":" + v));
-    }
-
-    public Map<String, List<String>> map() {
-        return headers;
-    }
-
-    private HttpHeaders(Map<String, List<String>> map) {
+    private HttpHeaders(Map<String, HeaderValue> map) {
         this.headers = map;
     }
 
-    private static HttpHeaders parse(Map<String, List<String>> headers) {
+    public static HttpHeaders of(Map<String, HeaderValue> map) {
+        return parse(map);
+    }
+
+    public static HttpHeaders ofRawMap(Map<String, List<String>> map) {
+        Map<String, HeaderValue> temp = Maps.newHashMap();
+
+        map.forEach((key, values) -> temp.put(key, new HeaderValue(values)));
+
+        return parse(temp);
+    }
+
+    public HeaderValue get(String key) {
+        return this.headers.get(key);
+    }
+
+    public boolean exists(String header) {
+        return this.headers.containsKey(header);
+    }
+
+    public void print() {
+        // TODO: fix this
+        this.headers.forEach((k, v) -> System.out.println(k + ":" + v));
+    }
+
+    public Map<String, HeaderValue> map() {
+        return headers;
+    }
+
+    private static HttpHeaders parse(Map<String, HeaderValue> headers) {
         // TODO: filtering and authenticating
         return new HttpHeaders(headers);
     }
@@ -47,5 +63,20 @@ public class HttpHeaders {
     @Override
     public String toString() {
         return " { " + map() + " }";
+    }
+
+    @AllArgsConstructor
+    public static class HeaderValue {
+
+        @Getter
+        private final List<String> values;
+
+        public String get(int index) {
+            return values.get(index);
+        }
+
+        public boolean contains(String value) {
+            return values.contains(value);
+        }
     }
 }

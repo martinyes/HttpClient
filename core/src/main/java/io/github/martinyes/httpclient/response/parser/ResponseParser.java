@@ -12,7 +12,20 @@ import io.github.martinyes.httpclient.response.WrappedHttpResponse;
  */
 public interface ResponseParser {
 
+    /**
+     * Parses the response headers.
+     *
+     * @param p0 the response data
+     * @return the parsed response headers
+     */
     HttpHeaders parseHeaders(String p0);
 
+    /**
+     * Parses the whole response.
+     *
+     * @param p0 the request that initiated the response
+     * @param p1 the response data
+     * @return the parsed response
+     */
     WrappedHttpResponse parseResponse(HttpRequest p0, String p1);
 }

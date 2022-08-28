@@ -29,8 +29,8 @@ public class HttpParams implements Pair<Multimap<String, String>> {
     /**
      * This method is used to generate a MultiMap from the given params.
      *
-     * @param params the params
-     * @return a MultiMap built from params
+     * @param params the params to be converted to a MultiMap
+     * @return a MultiMap from the given params
      */
     @Override
     public Multimap<String, String> parse(String[] params) {
@@ -50,8 +50,8 @@ public class HttpParams implements Pair<Multimap<String, String>> {
      * This method is used to build the actual query String
      * using the given HTTP Request params parsed through {@link Pair#parse(String[])}.
      *
-     * @param request the request
-     * @return the query String
+     * @param request the HTTP Request to be used to build the query String
+     * @return the actual query String
      */
     public String build(HttpRequest request) {
         if (request.getParams().getParamsMap() == null || !shouldBuild(request))
@@ -75,7 +75,7 @@ public class HttpParams implements Pair<Multimap<String, String>> {
      * URL encoding translates special characters from the URL to a representation
      * that adheres to the spec and can be correctly understood and interpreted.
      *
-     * @param s the String that needs to be encoded
+     * @param s the String to be encoded
      * @return the encoded String
      */
     @SneakyThrows
@@ -83,6 +83,12 @@ public class HttpParams implements Pair<Multimap<String, String>> {
         return UrlEscapers.urlPathSegmentEscaper().escape(s);
     }
 
+    /**
+     * Used to determine if the query String should be built.
+     * <p>
+     * @param request the HTTP Request to be used to build the query String
+     * @return true if the query String should be built, false otherwise
+     */
     private static boolean shouldBuild(HttpRequest request) {
         return !request.getParams().getParamsMap().isEmpty();
     }

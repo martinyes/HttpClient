@@ -140,7 +140,7 @@ public class HttpContainer {
             };
         }
 
-        WrappedHttpResponse wrapped = new DefaultParser().parseResponse(request, response.message());
+        WrappedHttpResponse wrapped = new DefaultParser().parseResponse(request, response.data());
 
         // Redirect https://www.rfc-editor.org/rfc/rfc7231.html#section-6.4
         if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && request.isFollowRedirects()) {

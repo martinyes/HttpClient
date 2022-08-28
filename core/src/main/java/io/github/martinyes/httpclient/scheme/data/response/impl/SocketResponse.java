@@ -6,10 +6,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SocketResponse implements RawResponse {
 
-    private final String message;
+    private final String data;
 
     @Override
-    public String message() {
-        return this.message;
+    public String data() {
+        return this.data;
     }
 }

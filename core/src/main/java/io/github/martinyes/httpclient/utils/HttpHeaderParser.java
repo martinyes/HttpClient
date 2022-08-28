@@ -20,6 +20,12 @@ public class HttpHeaderParser implements Pair<Multimap<String, String>> {
 
     @Getter private final Multimap<String, String> headersMap = ArrayListMultimap.create();
 
+    /**
+     * Parses the given headers into a MultiMap.
+     * <p>
+     * @param array the headers to be parsed
+     * @return a MultiMap from the given headers
+     */
     @Override
     public Multimap<String, String> parse(String[] array) {
         List<String> keys = extract(0, Arrays.asList(array));
@@ -31,6 +37,12 @@ public class HttpHeaderParser implements Pair<Multimap<String, String>> {
         return result;
     }
 
+    /**
+     * Builds the actual headers String using the given HTTP Request headers parsed through {@link Pair#parse(String[])}.
+     * <p>
+     * @param request the HTTP Request to be used to build the headers String
+     * @return the actual headers String
+     */
     public StringBuilder build(HttpRequest request) {
         StringBuilder builder = new StringBuilder();
 

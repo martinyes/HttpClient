@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import static io.github.martinyes.httpclient.scheme.util.RequestFormatter.format;
 
 /**
- * An implementation to {@link Scheme} using Java Sockets.
+ * An implementation to {@link Scheme} using a raw socket connection.
  * <p>
  * This class provides basic I/O operations to send headers and get responses through Sockets.
  *

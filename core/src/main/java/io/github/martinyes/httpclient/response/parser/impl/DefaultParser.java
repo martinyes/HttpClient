@@ -18,7 +18,7 @@ public class DefaultParser implements ResponseParser {
 
     @Override
     public HttpHeaders parseHeaders(String data) {
-        Map<String, List<String>> headers = new HashMap<>();
+        Map<String, HttpHeaders.HeaderValue> headers = new HashMap<>();
 
         String[] messages = data.split("\r\n");
 
@@ -29,9 +29,12 @@ public class DefaultParser implements ResponseParser {
                 break;
 
             String[] headerPair = message.split(": ", 2);
-            if (headerPair.length == 2)
-                // TODO: fix headers multimap
-                headers.put(headerPair[0].toLowerCase(), Collections.singletonList(headerPair[1]));
+            if (headerPair.length == 2) {
+                if (headers.containsKey(headerPair[0]))
+                    headers.get(headerPair[0]).getValues().add(headerPair[1]);
+                else
+                    headers.put(headerPair[0], new HttpHeaders.HeaderValue(Collections.singletonList(headerPair[1])));
+            }
         }
 
         return HttpHeaders.of(headers);
@@ -43,8 +46,8 @@ public class DefaultParser implements ResponseParser {
 
         // Check whether the response is transferred by chunks or not.
         // If so, we simply change the parsing algorithm to the chunked one.
-        if (headers.map().containsKey("Transfer-Encoding") &&
-                headers.map().get("Transfer-Encoding").equals("chunked"))
+        HttpHeaders.HeaderValue encoding = headers.get("Transfer-Encoding");
+        if (headers.exists("Transfer-Encoding") && encoding.contains("chunked"))
             return new ChunkedParser().parseResponse(request, data);
 
         String[] messages = data.split("\r\n");

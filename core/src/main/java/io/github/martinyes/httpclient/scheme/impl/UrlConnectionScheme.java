@@ -14,7 +14,12 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
-public class DefaultScheme implements Scheme {
+/**
+ * An implementation to {@link Scheme} using a {@link HttpURLConnection}.
+ * <p>
+ * @author martin
+ */
+public class UrlConnectionScheme implements Scheme {
 
     private HttpURLConnection connection;
 
@@ -56,7 +61,7 @@ public class DefaultScheme implements Scheme {
         return new DefaultResponse(
                 connection.getResponseCode(),
                 connection.getResponseMessage(),
-                HttpHeaders.of(connection.getHeaderFields()),
+                HttpHeaders.ofRawMap(connection.getHeaderFields()),
                 body
         );
     }

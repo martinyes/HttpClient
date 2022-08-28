@@ -6,7 +6,7 @@ import io.github.martinyes.httpclient.HttpMethod;
 import io.github.martinyes.httpclient.HttpParams;
 import io.github.martinyes.httpclient.HttpVersion;
 import io.github.martinyes.httpclient.scheme.Scheme;
-import io.github.martinyes.httpclient.scheme.impl.DefaultScheme;
+import io.github.martinyes.httpclient.scheme.impl.UrlConnectionScheme;
 import io.github.martinyes.httpclient.utils.HttpHeaderParser;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,19 +18,12 @@ import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 
 /**
- * This class represents an HTTP Request with the support for changing its values like:
- * <ul>
- *  <li>Version</li>
- *  <li>Method</li>
- *  <li>Executor</li>
- *  <li>Timeouts</li>
- * </ul>
- * <p>
- * These requests sent through an {@link HttpContainer}, that can be created manually
- * through an HTTP Client Builder.
+ * A class representing an HTTP Request.
+ * An HTTP Request is sent through an {@link HttpContainer}, that can be created manually through an HTTP Container Builder.
  *
  * @author martin
  * @since 1
+ * @version 2
  */
 @Builder
 @Getter
@@ -39,7 +32,7 @@ public class HttpRequest {
     /**
      * Execution options
      */
-    @Builder.Default private final Scheme scheme = new DefaultScheme();
+    @Builder.Default private final Scheme scheme = new UrlConnectionScheme();
     @Builder.Default private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(false).build());
     @Setter private String userAgent;
 
@@ -63,9 +56,11 @@ public class HttpRequest {
 
     /**
      * HTTP Request Builder Class.
+     * <p>
+     * This class is used to create an HTTP Request.
      *
      * @author martin
-     * @since 2
+     * @since 1
      */
     public static class HttpRequestBuilder {
         public HttpRequestBuilder() {

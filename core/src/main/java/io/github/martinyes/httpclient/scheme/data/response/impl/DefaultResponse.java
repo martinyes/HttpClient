@@ -13,7 +13,7 @@ public class DefaultResponse implements RawResponse {
     private final String message;
 
     @Override
-    public String message() {
+    public String data() {
         return this.message;
     }
 

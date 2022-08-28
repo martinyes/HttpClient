@@ -34,5 +34,11 @@ import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
 @FunctionalInterface
 public interface BodyType<T> {
 
-    T apply(RawResponse p0);
+    /**
+     * Returns the response body as a {@link T}
+     *
+     * @param res response to parse the body from
+     * @return response body as a {@link T}
+     */
+    T apply(RawResponse res);
 }

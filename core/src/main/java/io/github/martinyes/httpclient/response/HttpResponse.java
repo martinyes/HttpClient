@@ -11,25 +11,43 @@ import io.github.martinyes.httpclient.scheme.data.response.RawResponse;
 import java.nio.charset.Charset;
 
 /**
- * A class represents a response of a {@link HttpRequest}.
+ * A class represents a response from the server.
  *
  * @param <T> response body type
  * @author martin
- * @since 1
  * @version 2
+ * @since 1
  */
 public interface HttpResponse<T> {
 
+    /**
+     * @return the request that was initiated to get this response
+     */
     HttpRequest request();
 
+    /**
+     * @return the response code.
+     */
     int statusCode();
 
+    /**
+     * @return the response protocol.
+     */
     String protocol();
 
+    /**
+     * @return the text representation of the response code.
+     */
     String statusText();
 
+    /**
+     * @return the response headers.
+     */
     HttpHeaders headers();
 
+    /**
+     * @return the response body
+     */
     T body();
 
     /**
@@ -41,7 +59,7 @@ public interface HttpResponse<T> {
     class BodyHandlers {
 
         public static BodyType<String> asString() {
-            return RawResponse::message;
+            return RawResponse::data;
         }
 
         public static BodyType<byte[]> asBytes() {
@@ -53,7 +71,7 @@ public interface HttpResponse<T> {
         }
 
         public static BodyType<JsonObject> asJson() {
-            return res -> JsonParser.parseString(res.message()).getAsJsonObject();
+            return res -> JsonParser.parseString(res.data()).getAsJsonObject();
         }
     }
 }
