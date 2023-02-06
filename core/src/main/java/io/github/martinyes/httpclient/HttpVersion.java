@@ -24,7 +24,11 @@ public enum HttpVersion {
     /**
      * HTTP version 2
      */
-    HTTP_2("HTTP/2");
+    HTTP_2("HTTP/2"),
+    /**
+     * HTTP version 3
+     */
+    HTTP_3("HTTP/3");
 
     private final String headerName;
 }

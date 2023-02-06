@@ -3,10 +3,12 @@ package io.github.martinyes.httpclient;
 import io.github.martinyes.httpclient.request.HttpRequest;
 import io.github.martinyes.httpclient.response.HttpResponse;
 import io.github.martinyes.httpclient.scheme.impl.SocketScheme;
+import io.github.martinyes.httpclient.scheme.impl.UrlConnectionScheme;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -26,8 +28,8 @@ public class SimpleHttpTest {
     void anHttpRequestToTestASimpleGetRequest() throws InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.builder()
                 .uri(new URI("https://postman-echo.com/get"))
-                //.scheme(new SocketScheme())
-                //.version(HttpVersion.HTTP_1_1)
+                .scheme(new SocketScheme())
+                .version(HttpVersion.HTTP_1_1)
                 .method(HttpMethod.GET)
                 .build();
 
@@ -77,6 +79,8 @@ public class SimpleHttpTest {
         HttpRequest request = HttpRequest.builder()
                 .uri(new URI("https://postman-echo.com/get"))
                 .method(HttpMethod.GET)
+                .scheme(new UrlConnectionScheme())
+                .version(HttpVersion.HTTP_1_1)
                 .header("test", "value value")
                 .header("test", "value2")
                 .header("test2", "value1")

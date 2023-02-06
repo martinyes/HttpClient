@@ -76,6 +76,11 @@ public class DefaultParser implements ResponseParser {
             }
         }
 
+        /*if (request.isFollowRedirects() &&
+                Integer.parseInt(statusLine[1]) >= 300 && Integer.parseInt(statusLine[1]) <= 308) {
+            System.out.println("WE CAN REDIRECT HERE!!!!!!!!!!!!!!");
+        }*/
+
         return new WrappedHttpResponse(new WrappedHttpResponse.WrappedHttpStatus(statusLine[0], Integer.parseInt(statusLine[1]), statusLine[2]),
                 headers, bodyBuilder);
     }

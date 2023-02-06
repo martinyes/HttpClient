@@ -26,7 +26,7 @@ public class HttpServer {
     }
 
     public void start() {
-        APP = Javalin.create().start(7000);
+        APP = Javalin.create().start(5284);
         APP.before("*", ctx -> ctx.contentType("application/json"));
 
         addPage(new Page() {

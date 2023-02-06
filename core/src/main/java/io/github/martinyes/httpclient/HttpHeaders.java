@@ -47,8 +47,7 @@ public class HttpHeaders {
     }
 
     public void print() {
-        // TODO: fix this
-        this.headers.forEach((k, v) -> System.out.println(k + ":" + v));
+        this.headers.forEach((k, v) -> System.out.println(k + ":" + v.print()));
     }
 
     public Map<String, HeaderValue> map() {
@@ -73,6 +72,15 @@ public class HttpHeaders {
 
         public String get(int index) {
             return values.get(index);
+        }
+
+        public String get(String value) {
+            return values.stream().filter(v -> v.equals(value)).findFirst().orElse(null);
+        }
+
+        public String print() {
+            // print strings from the list separated by a comma
+            return values.stream().reduce((s1, s2) -> s1 + ", " + s2).orElse("");
         }
 
         public boolean contains(String value) {

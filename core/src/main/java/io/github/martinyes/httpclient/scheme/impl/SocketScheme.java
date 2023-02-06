@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-import static io.github.martinyes.httpclient.scheme.util.RequestFormatter.format;
+import static io.github.martinyes.httpclient.scheme.util.MessageFormatter.format;
 
 /**
  * An implementation to {@link Scheme} using a raw socket connection.

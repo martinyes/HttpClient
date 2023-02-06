@@ -33,6 +33,7 @@ public class UrlConnectionScheme implements Scheme {
                 .getConnectTimeout().toMillisPart());
         connection.setReadTimeout(data.getContainer()
                 .getReadTimeout().toMillisPart());
+        connection.setInstanceFollowRedirects(data.getRequest().isFollowRedirects());
     }
 
     @Override

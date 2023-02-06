@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -101,9 +102,35 @@ public class HttpContainer {
     }
 
     private <T> HttpResponse<T> parseResponse(RawResponse response, HttpRequest request, BodyType<T> bodyType) throws IOException, RedirectLoopException {
+        WrappedHttpResponse wrapped = new DefaultParser().parseResponse(request, response.data());
+
+        // Redirect https://www.rfc-editor.org/rfc/rfc7231.html#section-6.4
+        if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && request.isFollowRedirects()) {
+            if (!HttpRequest.REDIRECTS_RULE.test(request.getRedirectsCompleted()))
+                throw new RedirectLoopException(String.format("The http request exceeded the maximum number of redirects - %s", request.getRedirectsCompleted()));
+
+            request.setRedirectsCompleted(request.getRedirectsCompleted() + 1);
+
+            // TODO: fix parameters are not passed to the new request
+            // possible fix: directly inject parameters into URI when sending the request through sockets.
+            wrapped.getHeaders().print();
+            String newPath = wrapped.getHeaders().get("Location").get(0);
+            String withPortFormat = "%s://%s:%s%s";
+            String withoutPortFormat = "%s://%s%s";
+            String format = request.getUri().getPort() == -1
+                    ? String.format(withoutPortFormat, request.getUri().getScheme(), request.getUri().getHost(), newPath)
+                    : String.format(withPortFormat, request.getUri().getScheme(), request.getUri().getHost(), request.getUri().getPort(), newPath);
+
+            request.setUri(URI.create(format));
+
+            request.getScheme().disconnect();
+            return this.send(request, bodyType);
+        }
+
         // Check if the raw response is a default response so that we should not parse the response as it is not needed
         if (response instanceof DefaultResponse) {
             DefaultResponse temp = (DefaultResponse) response;
+
             return new HttpResponse<>() {
                 @Override
                 public HttpRequest request() {
@@ -138,22 +165,6 @@ public class HttpContainer {
                     return bodyType.apply(temp);
                 }
             };
-        }
-
-        WrappedHttpResponse wrapped = new DefaultParser().parseResponse(request, response.data());
-
-        // Redirect https://www.rfc-editor.org/rfc/rfc7231.html#section-6.4
-        if ((wrapped.getStatus().getCode() >= 300 && wrapped.getStatus().getCode() <= 308) && request.isFollowRedirects()) {
-            if (!HttpRequest.REDIRECTS_RULE.test(request.getRedirectsCompleted()))
-                throw new RedirectLoopException(String.format("The http request exceeded the maximum number of redirects - %s", request.getRedirectsCompleted()));
-
-            request.setRedirectsCompleted(request.getRedirectsCompleted() + 1);
-
-            // TODO: fix this
-            //String newPath = wrapped.getHeaders().get("location");
-            //request.setPath(newPath);
-
-            return this.send(request, bodyType);
         }
 
         return new HttpResponse<>() {

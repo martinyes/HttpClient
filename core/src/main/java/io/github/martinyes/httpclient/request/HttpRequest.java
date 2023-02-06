@@ -39,7 +39,7 @@ public class HttpRequest {
     /**
      * Basic options
      */
-    private final URI uri;
+    @Setter private URI uri;
     private final HttpMethod method;
     @Builder.Default private final HttpVersion version = HttpVersion.HTTP_1;
 
